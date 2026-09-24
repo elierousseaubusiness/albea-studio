@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f1e8">
+<title>Albéa & Co — Studio Créatif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  🔑  CLÉ API — À REMPLIR ICI (optionnel)                          ║
+// ║                                                                  ║
+// ║  1. Créez un compte sur https://fal.ai                           ║
+// ║  2. Allez sur https://fal.ai/dashboard/keys → "Add key"          ║
+// ║  3. Collez la clé entre les guillemets ci-dessous, ex :          ║
+// ║       var FAL_API_KEY = "a1b2c3d4-....:e5f6....";                ║
+// ║                                                                  ║
+// ║  Vous pouvez aussi laisser vide et coller la clé directement     ║
+// ║  dans l'application (elle est alors gardée dans ce navigateur).  ║
+// ║                                                                  ║
+// ║  ⚠️ Ne publiez JAMAIS en ligne un fichier contenant votre clé :   ║
+// ║     n'importe qui pourrait utiliser vos crédits.                 ║
+// ╚══════════════════════════════════════════════════════════════════╝
+var FAL_API_KEY = "";
+</script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --ivory: #f7f1e8;
+  --cream: #efe6d8;
+  --sand: #e4d7c3;
+  --panel: #fffaf3;
+  --ink: #2b221b;
+  --ink-soft: #5c4d40;
+  --ink-dim: #8a7a6a;
+  --ink-faint: #b9aa98;
+  --border: #e6d9c6;
+  --gold: #b88a52;
+  --gold-light: #d9b98a;
+  --amber: #e8a857;
+  --terracotta: #a8643c;
+  --success: #5f7f55;
+  --error: #b0493f;
+  --warn: #b98434;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 1px 2px rgba(43,34,27,0.04), 0 6px 24px rgba(43,34,27,0.06);
+  --shadow-lg: 0 20px 60px rgba(43,34,27,0.14);
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+}
+html { background: var(--ivory); }
+body {
+  font-family: var(--sans); color: var(--ink); min-height: 100vh;
+  font-size: 15px; line-height: 1.55;
+  background:
+    radial-gradient(900px 500px at 15% -5%, rgba(232,168,87,0.16), transparent 60%),
+    radial-gradient(700px 500px at 100% 40%, rgba(184,138,82,0.08), transparent 60%),
+    var(--ivory);
+  background-attachment: fixed;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem 7rem; }
+
+/* ── Header ───────────────────────────────────────── */
+header { text-align: center; padding: 1.2rem 0 1.6rem; }
+.lamp-logo { width: 56px; height: 72px; margin: 0 auto 0.8rem; position: relative; }
+.lamp-logo .shade {
+  position: absolute; left: 8px; right: 8px; top: 4px; height: 44px;
+  border-radius: 24px 24px 10px 10px;
+  background: radial-gradient(circle at 50% 60%, #fff4de 0%, #f3cf95 45%, #d9a45f 100%);
+  box-shadow: 0 0 30px rgba(232,168,87,0.55), 0 0 70px rgba(232,168,87,0.25);
+  animation: glow 4s ease-in-out infinite;
+}
+.lamp-logo .base { position: absolute; left: 18px; right: 18px; bottom: 6px; height: 18px; border-radius: 4px 4px 8px 8px; background: linear-gradient(#c9b89f, #a8957b); }
+@keyframes glow { 0%,100% { box-shadow: 0 0 28px rgba(232,168,87,0.5), 0 0 60px rgba(232,168,87,0.2); } 50% { box-shadow: 0 0 40px rgba(232,168,87,0.7), 0 0 90px rgba(232,168,87,0.3); } }
+h1 { font-family: var(--serif); font-weight: 500; font-size: 2.4rem; letter-spacing: 0.01em; line-height: 1.1; }
+h1 em { color: var(--terracotta); font-style: italic; }
+.subtitle { margin-top: 0.4rem; font-size: 0.7rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-dim); }
+
+/* ── Cards ───────────────────────────────────────── */
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1rem; }
+.card-pad { padding: 1.1rem 1.2rem; }
+.card-title { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+.card-title .num { font-family: var(--sans); font-size: 0.65rem; font-weight: 600; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--ink); color: var(--ivory); }
+.card-sub { font-size: 0.78rem; color: var(--ink-dim); margin-top: 0.15rem; margin-bottom: 0.9rem; }
+
+/* ── API key panel ───────────────────────────────── */
+.api-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; cursor: pointer; }
+.api-state { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; font-weight: 500; color: var(--ink-dim); }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-faint); flex-shrink: 0; }
+.api-ok .dot { background: var(--success); box-shadow: 0 0 0 4px rgba(95,127,85,0.15); }
+.api-ok .api-state { color: var(--success); }
+.api-body { margin-top: 0.9rem; }
+.api-body.hidden { display: none; }
+.key-row { display: flex; gap: 0.5rem; }
+.key-row input { flex: 1; min-width: 0; }
+input[type=text], input[type=password], textarea, select {
+  width: 100%; padding: 0.8rem 0.95rem; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: #fff; color: var(--ink);
+  font-family: var(--sans); font-size: 0.9rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,138,82,0.15); }
+#api-key-input { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.82rem; }
+select {
+  -webkit-appearance: none; appearance: none; padding-right: 2.2rem;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23b88a52' d='M0 0l5 6 5-6z'/></svg>");
+  background-repeat: no-repeat; background-position: right 0.95rem center; background-size: 10px;
+}
+.hint { font-size: 0.74rem; color: var(--ink-dim); margin-top: 0.6rem; line-height: 1.5; }
+.hint a { color: var(--terracotta); }
+.hint code { background: var(--cream); padding: 0.05rem 0.35rem; border-radius: 5px; font-size: 0.72rem; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  padding: 0.8rem 1.1rem; border-radius: var(--radius-sm); border: 1px solid transparent;
+  font-family: var(--sans); font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  transition: transform .1s, opacity .2s, background .2s; white-space: nowrap;
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn-dark { background: var(--ink); color: var(--ivory); }
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--ink-soft); }
+.btn-ghost:hover { border-color: var(--gold); }
+.btn-small { padding: 0.4rem 0.7rem; font-size: 0.72rem; border-radius: 9px; }
+
+/* ── Mode tabs ───────────────────────────────────── */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; padding: 0.4rem; margin-bottom: 1rem; }
+.tab {
+  border: none; background: transparent; border-radius: 14px; padding: 0.85rem 0.4rem;
+  cursor: pointer; font-family: var(--sans); color: var(--ink-dim); transition: all .25s;
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+}
+.tab .t-ico { font-size: 1.25rem; }
+.tab .t-name { font-family: var(--serif); font-size: 1.12rem; font-weight: 500; color: inherit; }
+.tab .t-desc { font-size: 0.65rem; letter-spacing: 0.04em; }
+.tab.active { background: linear-gradient(160deg, #3a2e25, #231b15); color: var(--ivory); box-shadow: 0 6px 20px rgba(43,34,27,0.25); }
+.tab.active .t-desc { color: var(--gold-light); }
+
+/* ── Upload ──────────────────────────────────────── */
+.upload-zone {
+  border: 1.5px dashed var(--sand); border-radius: var(--radius-sm); padding: 1.6rem 1rem;
+  text-align: center; cursor: pointer; background: linear-gradient(180deg, #fffdf9, #fbf4ea);
+  transition: border-color .2s, background .2s;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--gold); background: #fbf1e2; }
+.upload-zone input { display: none; }
+.upload-zone .u-ico { font-family: var(--serif); font-size: 2rem; color: var(--gold); line-height: 1; }
+.upload-zone .u-text { font-weight: 500; margin-top: 0.3rem; }
+.upload-zone .u-hint { font-size: 0.74rem; color: var(--ink-dim); margin-top: 0.15rem; }
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 0.5rem; margin-top: 0.8rem; }
+.thumbs:empty { display: none; }
+.thumb { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--cream); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb button { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(43,34,27,0.7); color: #fff; font-size: 11px; cursor: pointer; }
+
+/* ── Prompt & presets ────────────────────────────── */
+textarea { min-height: 110px; resize: vertical; line-height: 1.5; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
+.chip {
+  padding: 0.42rem 0.8rem; border-radius: 999px; border: 1px solid var(--border);
+  background: #fff; font-size: 0.74rem; cursor: pointer; color: var(--ink-soft);
+  font-family: var(--sans); transition: all .15s;
+}
+.chip:hover { border-color: var(--gold); color: var(--ink); }
+.chip.on { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+
+.styles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; }
+.style {
+  padding: 0.75rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: #fff; cursor: pointer; transition: all .15s; text-align: left;
+  font-family: var(--sans); color: var(--ink);
+}
+.style:hover { border-color: var(--gold-light); }
+.style .s-name { font-size: 0.82rem; font-weight: 600; display: flex; gap: 0.4rem; align-items: center; }
+.style .s-desc { font-size: 0.68rem; color: var(--ink-dim); margin-top: 0.15rem; line-height: 1.3; }
+.style.on { background: linear-gradient(160deg, #fbecd4, #f5dfbd); border-color: var(--gold); box-shadow: 0 2px 10px rgba(184,138,82,0.2); }
+
+/* ── Controls ────────────────────────────────────── */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.8rem; }
+label.lbl { display: block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 0.35rem; }
+.toggle-row { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.8rem 0.9rem; border-radius: var(--radius-sm); background: #fbf3e6; border: 1px solid var(--border); margin-top: 0.8rem; cursor: pointer; }
+.toggle-row input { margin-top: 0.2rem; accent-color: var(--terracotta); width: 17px; height: 17px; flex-shrink: 0; }
+.toggle-row .tr-title { font-size: 0.85rem; font-weight: 600; }
+.toggle-row .tr-desc { font-size: 0.74rem; color: var(--ink-dim); }
+.hidden { display: none !important; }
+
+/* ── Generate ────────────────────────────────────── */
+.cta-box { position: sticky; bottom: 0.8rem; z-index: 50; }
+.btn-generate {
+  width: 100%; padding: 1.1rem; border-radius: var(--radius); border: none; cursor: pointer;
+  background: linear-gradient(135deg, #3a2e25 0%, #231b15 100%); color: var(--ivory);
+  font-family: var(--serif); font-size: 1.35rem; font-weight: 500; letter-spacing: 0.02em;
+  box-shadow: 0 10px 30px rgba(43,34,27,0.3); transition: transform .1s, opacity .2s;
+  display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
+}
+.btn-generate small { font-family: var(--sans); font-size: 0.7rem; color: var(--gold-light); letter-spacing: 0.04em; }
+.btn-generate:active:not(:disabled) { transform: scale(0.985); }
+.btn-generate:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-stop { width: 100%; margin-top: 0.5rem; background: var(--panel); color: var(--error); border: 1px solid var(--border); }
+
+/* ── Queue ───────────────────────────────────────── */
+.q-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: #fff; margin-bottom: 0.4rem; font-size: 0.82rem; }
+.q-item img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.q-item .q-main { flex: 1; min-width: 0; }
+.q-item .q-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-item .q-status { font-size: 0.72rem; color: var(--ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-item.run { border-color: var(--gold); }
+.q-item.done { border-color: rgba(95,127,85,0.5); }
+.q-item.fail { border-color: rgba(176,73,63,0.5); }
+.q-item.fail .q-status { color: var(--error); white-space: normal; }
+.spin { width: 14px; height: 14px; border: 2px solid rgba(184,138,82,0.25); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Gallery ─────────────────────────────────────── */
+.gal-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; }
+.g-item { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: #1e1813; animation: fadeIn .4s ease; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+.g-media { position: relative; background: #1e1813; display: flex; align-items: center; justify-content: center; }
+.g-media img, .g-media video { width: 100%; display: block; max-height: 420px; object-fit: contain; cursor: zoom-in; }
+.g-badge { position: absolute; top: 8px; left: 8px; background: rgba(43,34,27,0.72); color: var(--ivory); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; padding: 0.2rem 0.5rem; border-radius: 6px; backdrop-filter: blur(4px); }
+.g-foot { background: var(--panel); padding: 0.55rem 0.6rem; display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: auto; }
+.g-foot .btn { flex: 1; }
+.empty { text-align: center; color: var(--ink-dim); font-size: 0.85rem; padding: 1.5rem 0.5rem; font-style: italic; font-family: var(--serif); font-size: 1.05rem; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── Lightbox ────────────────────────────────────── */
+.lightbox { position: fixed; inset: 0; background: rgba(20,15,11,0.92); z-index: 900; display: none; align-items: center; justify-content: center; padding: 1rem; }
+.lightbox.open { display: flex; }
+.lightbox img, .lightbox video { max-width: 100%; max-height: 90vh; border-radius: 10px; }
+.lightbox .lb-close { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255,255,255,0.15); color: #fff; font-size: 1.1rem; cursor: pointer; }
+
+/* ── Toast ───────────────────────────────────────── */
+.toast { position: fixed; top: 1rem; left: 50%; transform: translate(-50%, -140%); background: var(--ink); color: var(--ivory); padding: 0.8rem 1.2rem; border-radius: 12px; font-size: 0.84rem; z-index: 1000; box-shadow: var(--shadow-lg); transition: transform .35s ease; max-width: min(92vw, 520px); text-align: center; }
+.toast.show { transform: translate(-50%, 0); }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--error); }
+.toast.warn { background: var(--warn); }
+
+footer { text-align: center; margin-top: 2.5rem; color: var(--ink-faint); font-family: var(--serif); font-style: italic; font-size: 0.95rem; }
+footer .fleur { color: var(--gold); font-style: normal; display: block; margin-bottom: 0.2rem; }
+
+@media (max-width: 520px) {
+  h1 { font-size: 2rem; }
+  .tab .t-desc { display: none; }
+  .gallery { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .g-foot .btn { font-size: 0.66rem; padding: 0.4rem 0.3rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="lamp-logo"><div class="shade"></div><div class="base"></div></div>
+  <h1>Albéa <em>&amp;</em> Co</h1>
+  <p class="subtitle">Studio créatif · Lampes en albâtre</p>
+</header>
+
+<!-- ── Clé API ───────────────────────────── -->
+<div class="card card-pad" id="api-card">
+  <div class="api-head" id="api-head">
+    <div class="card-title">🔑 Connexion IA</div>
+    <span class="api-state"><span class="dot"></span><span id="api-state-text">Aucune clé</span></span>
+  </div>
+  <div class="api-body" id="api-body">
+    <div class="key-row">
+      <input type="password" id="api-key-input" placeholder="Collez votre clé fal.ai ici" autocomplete="off" spellcheck="false">
+      <button class="btn btn-dark" id="api-save">Enregistrer</button>
+    </div>
+    <div class="key-row" style="margin-top:0.5rem;">
+      <button class="btn btn-ghost btn-small" id="api-show">👁 Afficher</button>
+      <button class="btn btn-ghost btn-small" id="api-clear">Supprimer la clé</button>
+    </div>
+    <p class="hint">
+      Créez votre clé sur <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>
+      (compte gratuit, les générations consomment des crédits — rechargeables sur <a href="https://fal.ai/dashboard/billing" target="_blank" rel="noopener">fal.ai/dashboard/billing</a>).
+      La clé reste uniquement dans ce navigateur. Vous pouvez aussi l'écrire une fois pour toutes dans le fichier, ligne <code>var FAL_API_KEY = "";</code> en haut du code.
+    </p>
+  </div>
+</div>
+
+<!-- ── Modes ─────────────────────────────── -->
+<div class="card tabs">
+  <button class="tab active" data-mode="tiktok"><span class="t-ico">🎬</span><span class="t-name">TikTok</span><span class="t-desc">Vidéos 9:16</span></button>
+  <button class="tab" data-mode="produit"><span class="t-ico">📸</span><span class="t-name">Photo produit</span><span class="t-desc">Packshots & lifestyle</span></button>
+  <button class="tab" data-mode="site"><span class="t-ico">🌐</span><span class="t-name">Site web</span><span class="t-desc">Bannières & visuels</span></button>
+</div>
+
+<!-- ── 1. Photos ─────────────────────────── -->
+<div class="card card-pad">
+  <div class="card-title"><span class="num">1</span> Vos photos de lampe</div>
+  <p class="card-sub" id="upload-sub">Chaque photo devient une création. L'IA garde votre lampe à l'identique.</p>
+  <label class="upload-zone" id="upload-zone">
+    <input type="file" id="file-input" accept="image/*" multiple>
+    <div class="u-ico">＋</div>
+    <div class="u-text">Ajouter des photos</div>
+    <div class="u-hint">Touchez ou glissez vos images · JPG, PNG, HEIC, WEBP</div>
+  </label>
+  <div class="thumbs" id="thumbs"></div>
+</div>
+
+<!-- ── 2. Vision ─────────────────────────── -->
+<div class="card card-pad">
+  <div class="card-title"><span class="num">2</span> Votre vision</div>
+  <p class="card-sub">Décrivez l'ambiance souhaitée (en français, c'est parfait). Laissez vide pour laisser faire l'ambiance choisie.</p>
+  <textarea id="main-prompt" placeholder="Ex : La lampe est posée sur une console en chêne, dans un salon cosy en fin de journée. Un plaid en lin, une tasse de thé fumante, la lumière traverse l'albâtre et révèle ses veines."></textarea>
+  <div class="chips" id="presets"></div>
+</div>
+
+<!-- ── 3. Ambiance ───────────────────────── -->
+<div class="card card-pad">
+  <div class="card-title"><span class="num">3</span> Ambiance</div>
+  <p class="card-sub">Un parti pris lumineux appliqué à toutes les créations.</p>
+  <div class="styles" id="styles"></div>
+</div>
+
+<!-- ── 4. Réglages ───────────────────────── -->
+<div class="card card-pad">
+  <div class="card-title"><span class="num">4</span> Réglages</div>
+  <p class="card-sub" id="settings-sub">Format, qualité et mouvement.</p>
+
+  <!-- Vidéo -->
+  <div id="opts-video">
+    <div class="grid2">
+      <div>
+        <label class="lbl">Modèle vidéo</label>
+        <select id="video-model"></select>
+      </div>
+      <div>
+        <label class="lbl">Durée</label>
+        <select id="video-duration">
+          <option value="5" selected>5 secondes</option>
+          <option value="10">10 secondes</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Mouvement</label>
+        <select id="video-motion">
+          <option value="glow">Lumière qui respire</option>
+          <option value="dolly">Travelling lent vers la lampe</option>
+          <option value="orbit">Rotation douce autour</option>
+          <option value="reveal">Révélation (allumage de la lampe)</option>
+          <option value="macro">Macro sur les veines d'albâtre</option>
+          <option value="lifestyle">Scène de vie (main, thé, livre)</option>
+          <option value="random">Surprise (aléatoire)</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Intensité</label>
+        <select id="video-intensity">
+          <option value="subtle" selected>Subtile · cosy</option>
+          <option value="moderate">Modérée</option>
+          <option value="strong">Marquée · dynamique</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Variantes par photo</label>
+        <select id="video-count">
+          <option value="1" selected>1 vidéo</option>
+          <option value="2">2 vidéos</option>
+          <option value="3">3 vidéos</option>
+        </select>
+      </div>
+    </div>
+    <label class="toggle-row">
+      <input type="checkbox" id="video-staging" checked>
+      <span>
+        <span class="tr-title">Mise en scène IA avant l'animation (recommandé)</span><br>
+        <span class="tr-desc">Recompose d'abord votre photo en 9:16 dans le décor et l'ambiance choisis, puis l'anime. Sinon, la photo est simplement recadrée en vertical.</span>
+      </span>
+    </label>
+    <div class="grid2" id="staging-opts" style="margin-top:0.8rem;">
+      <div>
+        <label class="lbl">Décor de la scène</label>
+        <select id="video-bg" class="bg-select"></select>
+      </div>
+      <div>
+        <label class="lbl">Éclairage</label>
+        <select id="video-light" class="light-select"></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo -->
+  <div id="opts-photo" class="hidden">
+    <div class="grid2">
+      <div>
+        <label class="lbl" id="format-label">Format</label>
+        <select id="photo-format"></select>
+      </div>
+      <div>
+        <label class="lbl">Qualité</label>
+        <select id="photo-res">
+          <option value="1K">Standard · 1K</option>
+          <option value="2K" selected>Haute · 2K (recommandé)</option>
+          <option value="4K">Ultra · 4K (impression, zoom)</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Décor</label>
+        <select id="photo-bg" class="bg-select"></select>
+      </div>
+      <div>
+        <label class="lbl">Éclairage</label>
+        <select id="photo-light" class="light-select"></select>
+      </div>
+      <div>
+        <label class="lbl">Variantes par photo</label>
+        <select id="photo-count">
+          <option value="1">1 image</option>
+          <option value="2" selected>2 images</option>
+          <option value="3">3 images</option>
+          <option value="4">4 images</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Fichier</label>
+        <select id="photo-ext">
+          <option value="png" selected>PNG (qualité max)</option>
+          <option value="jpeg">JPG (plus léger, web)</option>
+          <option value="webp">WEBP (idéal site web)</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Modèle photo</label>
+        <select id="photo-model"></select>
+      </div>
+    </div>
+  </div>
+  <p class="hint" id="cost-hint"></p>
+</div>
+
+<!-- ── Bouton ─────────────────────────────── -->
+<div class="cta-box">
+  <button class="btn-generate" id="generate-btn" disabled>
+    <span id="generate-label">Créer les vidéos</span>
+    <small id="generate-sub">Ajoutez au moins une photo</small>
+  </button>
+  <button class="btn btn-stop hidden" id="stop-btn">⏹ Arrêter après la création en cours</button>
+</div>
+
+<!-- ── File d'attente ─────────────────────── -->
+<div class="card card-pad hidden" id="queue-card" style="margin-top:1rem;">
+  <div class="card-title" style="margin-bottom:0.7rem;">⏳ En cours <span class="hint" id="queue-summary" style="margin:0 0 0 auto;"></span></div>
+  <div id="queue"></div>
+</div>
+
+<!-- ── Galerie ────────────────────────────── -->
+<div class="card card-pad" style="margin-top:1rem;">
+  <div class="gal-head">
+    <div class="card-title">✨ Vos créations</div>
+    <div class="chips" style="margin:0;" id="gal-filters">
+      <button class="chip on" data-f="all">Tout</button>
+      <button class="chip" data-f="video">Vidéos</button>
+      <button class="chip" data-f="image">Photos</button>
+    </div>
+  </div>
+  <div class="gallery" id="gallery"></div>
+  <div class="empty" id="gallery-empty">Vos vidéos et photos apparaîtront ici.</div>
+  <p class="hint">Les fichiers sont hébergés temporairement par fal.ai : téléchargez ceux que vous aimez. <a href="#" id="gal-clear">Vider la galerie</a></p>
+</div>
+
+<footer><span class="fleur">✦</span>Albéa &amp; Co · Atelier numérique</footer>
+</div>
+
+<div class="lightbox" id="lightbox"><button class="lb-close" id="lb-close">✕</button><div id="lb-content"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ══════════════════════════════════════════════════════════════════
+var QUEUE_BASE = 'https://queue.fal.run/';
+var KEY_STORAGE = 'albea_fal_key';
+var GALLERY_STORAGE = 'albea_gallery_v2';
+var POLL_MS = 4000;
+var MAX_WAIT_MS = 25 * 60 * 1000;
+var MAX_UPLOAD_SIDE = 2048;
+
+// Modèles fal.ai (prix indicatifs en $ — vérifiez sur fal.ai/pricing)
+var VIDEO_MODELS = [
+  { id: 'fal-ai/kling-video/v2.1/standard/image-to-video', name: 'Kling 2.1 Standard · économique', imageField: 'image_url', perSec: 0.05 },
+  { id: 'fal-ai/kling-video/v2.1/pro/image-to-video', name: 'Kling 2.1 Pro · très fluide', imageField: 'image_url', perSec: 0.09 },
+  { id: 'fal-ai/kling-video/v3/standard/image-to-video', name: 'Kling 3 Standard · dernière génération', imageField: 'start_image_url', perSec: 0.084, noAudio: true }
+];
+var PHOTO_MODELS = [
+  { id: 'fal-ai/nano-banana-pro/edit', name: 'Nano Banana Pro · qualité maximale', price: { '1K': 0.15, '2K': 0.15, '4K': 0.30 }, hasRes: true },
+  { id: 'fal-ai/nano-banana/edit', name: 'Nano Banana · rapide & économique', price: { '1K': 0.04, '2K': 0.04, '4K': 0.04 }, hasRes: false }
+];
+var STAGING_MODEL = PHOTO_MODELS[0];
+
+var FIDELITY = 'CRITICAL: the alabaster lamp shown in the reference photo is the real product and must stay strictly identical — same shape, proportions, silhouette, base, stone veining, colour, texture and translucency. Do not redesign it, do not replace it, do not add any other lamp, no text, no logo, no watermark.';
+
+var BACKGROUNDS = [
+  { id: 'cosy', name: 'Salon cosy', p: 'on a warm oak side table in a cosy, softly lit living room with a linen throw, a stack of books and a ceramic vase, cream and terracotta tones, blurred background' },
+  { id: 'bedroom', name: 'Chevet de chambre', p: 'on a bedside table next to a bed with rumpled natural linen sheets, calm evening bedroom, soft warm atmosphere' },
+  { id: 'wood', name: 'Table en bois chaud', p: 'on a rich walnut wooden table, warm neutral wall behind, minimal and elegant' },
+  { id: 'linen', name: 'Lin naturel', p: 'on natural beige linen fabric with soft folds, warm neutral backdrop' },
+  { id: 'travertine', name: 'Travertin & pierre', p: 'on a travertine stone plinth, limewashed plaster wall, Mediterranean wabi-sabi interior' },
+  { id: 'marble', name: 'Marbre blanc', p: 'on a white Carrara marble surface, soft clean luxury setting' },
+  { id: 'dark', name: 'Fond sombre dramatique', p: 'against a deep dark brown backdrop, low-key moody scene where the lamp is the only light source' },
+  { id: 'beige', name: 'Fond beige épuré', p: 'on a seamless warm beige studio backdrop, minimal and premium' },
+  { id: 'white', name: 'Packshot fond blanc (e-commerce)', p: 'isolated on a pure seamless white background (#FFFFFF) with a soft natural contact shadow, centered e-commerce packshot' },
+  { id: 'keep', name: 'Garder le décor d\'origine', p: 'keep the original setting and background of the photo, only enhance it' }
+];
+var LIGHTS = [
+  { id: 'warm', name: 'Chaud & doux', p: 'the lamp is switched on and glows with a soft warm amber light through the alabaster, gentle warm ambient light' },
+  { id: 'golden', name: 'Golden hour', p: 'golden hour sunlight streaming through a window, long soft shadows, honey tones, the lamp glowing warmly' },
+  { id: 'evening', name: 'Soirée cocooning', p: 'evening, dim room, the lamp is the main light source, glowing warm through the translucent stone, candles nearby' },
+  { id: 'daylight', name: 'Lumière naturelle', p: 'soft diffused natural daylight from a side window, airy and fresh, lamp softly lit' },
+  { id: 'studio', name: 'Studio professionnel', p: 'professional studio softbox lighting, controlled highlights, crisp product photography' }
+];
+
+var AMBIANCES = [
+  { id: 'none', name: 'Aucune', emoji: '○', desc: 'Seulement vos réglages', p: '' },
+  { id: 'cosy', name: 'Cocooning', emoji: '🧺', desc: 'Chaleureux et enveloppant', p: 'hygge cocooning mood, warm and inviting, soft textures, calm and intimate' },
+  { id: 'candle', name: 'Bougie', emoji: '🕯️', desc: 'Lumière ambrée intime', p: 'intimate candlelight mood, amber glow, deep warm shadows' },
+  { id: 'golden', name: 'Golden hour', emoji: '🌅', desc: 'Reflets dorés', p: 'golden hour glow, honey-coloured light, luminous haze' },
+  { id: 'wabi', name: 'Wabi-sabi', emoji: '🪨', desc: 'Minéral et épuré', p: 'wabi-sabi aesthetic, raw natural materials, limewash, stone and linen, serene minimalism' },
+  { id: 'luxe', name: 'Luxe éditorial', emoji: '💎', desc: 'Magazine déco haut de gamme', p: 'high-end interior design magazine editorial, refined luxury, impeccable styling' },
+  { id: 'medit', name: 'Méditerranée', emoji: '🌿', desc: 'Chaux, olivier, soleil', p: 'Mediterranean villa mood, whitewashed walls, olive branch, sun-kissed warmth' },
+  { id: 'night', name: 'Nuit calme', emoji: '🌙', desc: 'Pénombre apaisante', p: 'quiet night, dark peaceful room, the lamp as a warm beacon of light' },
+  { id: 'film', name: 'Film argentique', emoji: '🎞️', desc: 'Grain doux, couleurs chaudes', p: 'shot on 35mm film, subtle grain, warm faded colours, nostalgic' }
+];
+
+var PRESETS = {
+  tiktok: [
+    { l: '🕯️ Allumage magique', t: 'La pièce est dans la pénombre, puis la lampe s\'allume doucement et la lumière traverse l\'albâtre en révélant ses veines naturelles. Moment calme et cosy.' },
+    { l: '☕ Soirée cosy', t: 'Une main pose une tasse de thé fumante à côté de la lampe allumée, sur une table en bois. Plaid en lin, ambiance cocooning du soir.' },
+    { l: '✨ Poussière dorée', t: 'De fines particules dorées flottent dans la lumière chaude de la lampe. La caméra glisse très lentement vers l\'albâtre.' },
+    { l: '🌙 Chevet', t: 'Chambre calme la nuit, la lampe diffuse une lueur ambrée sur les draps en lin. La lumière pulse très légèrement comme une respiration.' },
+    { l: '🎬 Cinématique', t: 'Plan cinématographique, profondeur de champ, lent travelling latéral autour de la lampe allumée, lumière chaude et contrastée.' }
+  ],
+  produit: [
+    { l: '🤍 Packshot e-commerce', t: 'Packshot produit parfait sur fond blanc pur, lampe centrée, allumée, ombre douce au sol, netteté parfaite.' },
+    { l: '🔍 Détail matière', t: 'Gros plan macro sur la texture de l\'albâtre illuminé, veines naturelles et translucidité bien visibles.' },
+    { l: '🏡 Lifestyle salon', t: 'La lampe allumée sur une console en chêne dans un salon cosy, livres, céramique, plaid en lin. Photo de catalogue déco.' },
+    { l: '🌿 Nature morte', t: 'Composition nature morte élégante : la lampe, une branche d\'olivier, un vase en grès, sur un socle en travertin.' }
+  ],
+  site: [
+    { l: '🖼️ Bannière d\'accueil', t: 'Grande image d\'accueil élégante, la lampe allumée placée sur le tiers droit, beaucoup d\'espace libre et épuré à gauche pour du texte.' },
+    { l: '📖 Page « Notre histoire »', t: 'Atelier d\'artisan chaleureux, établi en bois, blocs d\'albâtre brut, la lampe finie allumée au premier plan.' },
+    { l: '🛋️ Intérieur inspirant', t: 'Intérieur contemporain chaleureux et lumineux, la lampe comme pièce maîtresse du décor.' },
+    { l: '🎁 Idée cadeau', t: 'La lampe à côté d\'un joli papier kraft et d\'un ruban en lin, ambiance cadeau chaleureuse et raffinée.' }
+  ]
+};
+
+var MOTIONS = {
+  glow: 'the warm light inside the alabaster lamp gently breathes and pulses, light slowly spreading through the translucent stone, very slow camera push-in',
+  dolly: 'slow cinematic dolly-in toward the glowing lamp, smooth and steady camera',
+  orbit: 'slow smooth orbital camera movement around the lamp revealing its volume, parallax on the background',
+  reveal: 'the room starts dim, then the lamp gradually switches on and warm light blooms through the alabaster, illuminating the scene',
+  macro: 'macro shot slowly gliding across the illuminated alabaster surface, revealing the natural veins and translucency, shallow depth of field',
+  lifestyle: 'a hand gently places a steaming cup of tea next to the glowing lamp, subtle natural lifestyle motion, soft steam rising'
+};
+var INTENSITY = {
+  subtle: 'very subtle, slow, calm and soothing motion',
+  moderate: 'smooth, clearly visible but controlled motion',
+  strong: 'more dynamic camera movement with lively light play, still elegant'
+};
+var FORMATS = {
+  produit: [
+    { v: '1:1', n: 'Carré 1:1 · fiche produit, Instagram' },
+    { v: '4:5', n: 'Portrait 4:5 · Instagram feed' },
+    { v: '3:4', n: 'Portrait 3:4 · fiche produit Shopify' },
+    { v: '2:3', n: 'Portrait 2:3 · Pinterest' },
+    { v: '9:16', n: 'Vertical 9:16 · stories' },
+    { v: '3:2', n: 'Paysage 3:2 · photo classique' },
+    { v: 'auto', n: 'Identique à la photo d\'origine' }
+  ],
+  site: [
+    { v: '16:9', n: 'Bannière 16:9 · page d\'accueil' },
+    { v: '21:9', n: 'Bannière large 21:9 · plein écran' },
+    { v: '3:2', n: 'Paysage 3:2 · blog, sections' },
+    { v: '4:3', n: 'Paysage 4:3 · collection' },
+    { v: '1:1', n: 'Carré 1:1 · vignette produit' },
+    { v: '4:5', n: 'Portrait 4:5 · mobile' },
+    { v: '9:16', n: 'Vertical 9:16 · bannière mobile' }
+  ]
+};
+var MODE_INFO = {
+  tiktok:  { label: 'Créer les vidéos', sub: 'Vidéos verticales 9:16 prêtes pour TikTok, Reels et Shorts.', ambiance: 'cosy', bg: 'cosy', light: 'evening' },
+  produit: { label: 'Créer les photos produit', sub: 'Packshots et photos lifestyle haute définition.', ambiance: 'none', bg: 'white', light: 'studio', format: '1:1' },
+  site:    { label: 'Créer les visuels du site', sub: 'Bannières et visuels au format web, qualité 2K à 4K.', ambiance: 'luxe', bg: 'cosy', light: 'golden', format: '16:9' }
+};
+
+// ══════════════════════════════════════════════════════════════════
+// ÉTAT
+// ══════════════════════════════════════════════════════════════════
+var state = {
+  mode: 'tiktok',
+  images: [],          // { id, dataUrl, w, h, name }
+  ambiance: { tiktok: 'cosy', produit: 'none', site: 'luxe' },
+  running: false,
+  stop: false,
+  gallery: [],
+  filter: 'all',
+  wakeLock: null
+};
+var $ = function (id) { return document.getElementById(id); };
+
+// ══════════════════════════════════════════════════════════════════
+// UTILITAIRES
+// ══════════════════════════════════════════════════════════════════
+var toastTimer = null;
+function toast(msg, type, ms) {
+  var t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.className = 'toast ' + (type || ''); }, ms || 3200);
+}
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return list[0]; }
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+// ══════════════════════════════════════════════════════════════════
+// CLÉ API
+// ══════════════════════════════════════════════════════════════════
+function getKey() {
+  var k = (lsGet(KEY_STORAGE) || '').trim();
+  if (!k && typeof FAL_API_KEY === 'string') k = FAL_API_KEY.trim();
+  return k;
+}
+function keySource() {
+  if ((lsGet(KEY_STORAGE) || '').trim()) return 'app';
+  if (typeof FAL_API_KEY === 'string' && FAL_API_KEY.trim()) return 'file';
+  return '';
+}
+function renderKey() {
+  var src = keySource();
+  var card = $('api-card');
+  card.classList.toggle('api-ok', !!src);
+  $('api-state-text').textContent = src === 'file' ? 'Clé intégrée au fichier' : src === 'app' ? 'Clé enregistrée' : 'Aucune clé';
+  $('api-body').classList.toggle('hidden', !!src);
+  $('api-key-input').value = lsGet(KEY_STORAGE) || '';
+  updateGenerate();
+}
+function initKey() {
+  $('api-head').onclick = function () { $('api-body').classList.toggle('hidden'); };
+  $('api-save').onclick = function () {
+    var v = $('api-key-input').value.trim().replace(/^Key\s+/i, '');
+    if (!v) { toast('Collez d\'abord votre clé', 'warn'); return; }
+    if (v.length < 20) { toast('Cette clé semble incomplète', 'warn'); return; }
+    lsSet(KEY_STORAGE, v);
+    renderKey();
+    toast('Clé enregistrée ✓', 'success');
+  };
+  $('api-key-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('api-save').click(); });
+  $('api-show').onclick = function () {
+    var i = $('api-key-input');
+    i.type = i.type === 'password' ? 'text' : 'password';
+  };
+  $('api-clear').onclick = function () {
+    lsDel(KEY_STORAGE);
+    renderKey();
+    $('api-body').classList.remove('hidden');
+    toast(keySource() === 'file' ? 'Clé du navigateur supprimée (celle du fichier reste active)' : 'Clé supprimée');
+  };
+  renderKey();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// API fal.ai (file d'attente asynchrone)
+// ══════════════════════════════════════════════════════════════════
+function explainError(status, body) {
+  var detail = '';
+  if (body) {
+    if (typeof body.detail === 'string') detail = body.detail;
+    else if (Array.isArray(body.detail)) detail = body.detail.map(function (d) { return d.msg || JSON.stringify(d); }).join(' · ');
+    else if (body.message) detail = body.message;
+    else if (body.error) detail = typeof body.error === 'string' ? body.error : JSON.stringify(body.error);
+  }
+  var low = (detail || '').toLowerCase();
+  if (status === 401) return 'Clé API refusée : vérifiez qu\'elle est complète et valide.';
+  if (status === 403 && (low.indexOf('balance') >= 0 || low.indexOf('locked') >= 0 || low.indexOf('credit') >= 0 || low.indexOf('billing') >= 0))
+    return 'Crédits fal.ai épuisés : rechargez sur fal.ai/dashboard/billing.';
+  if (status === 402) return 'Crédits fal.ai épuisés : rechargez sur fal.ai/dashboard/billing.';
+  if (status === 403) return 'Accès refusé par fal.ai' + (detail ? ' : ' + detail : '');
+  if (status === 422) return 'Requête refusée' + (detail ? ' : ' + detail : '') + (low.indexOf('content') >= 0 || low.indexOf('safety') >= 0 ? '' : '');
+  if (status === 429) return 'Trop de requêtes simultanées, nouvelle tentative…';
+  return 'Erreur ' + status + (detail ? ' : ' + detail : '');
+}
+
+async function falFetch(url, opts) {
+  opts = opts || {};
+  opts.headers = Object.assign({ 'Authorization': 'Key ' + getKey() }, opts.headers || {});
+  var res;
+  try { res = await fetch(url, opts); }
+  catch (e) { throw new Error('Connexion impossible à fal.ai (réseau ou bloqueur de contenu).'); }
+  var body = null;
+  try { body = await res.json(); } catch (e) {}
+  return { res: res, body: body };
+}
+
+async function falRun(endpoint, input, onStatus) {
+  var r, tries = 0;
+  while (true) {
+    r = await falFetch(QUEUE_BASE + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input)
+    });
+    if (r.res.status === 429 && tries < 5) { tries++; onStatus && onStatus('Serveur saturé, nouvelle tentative…'); await sleep(5000 * tries); continue; }
+    break;
+  }
+  if (!r.res.ok) throw new Error(explainError(r.res.status, r.body));
+  var job = r.body || {};
+  var statusUrl = job.status_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id + '/status');
+  var responseUrl = job.response_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id);
+  var start = Date.now();
+  while (true) {
+    await sleep(POLL_MS);
+    if (Date.now() - start > MAX_WAIT_MS) throw new Error('Délai dépassé (25 min). Réessayez plus tard.');
+    var s;
+    try { s = await falFetch(statusUrl); } catch (e) { onStatus && onStatus('Connexion instable, on patiente…'); continue; }
+    if (!s.res.ok && s.res.status !== 202) {
+      if (s.res.status >= 500) continue;
+      throw new Error(explainError(s.res.status, s.body));
+    }
+    var st = (s.body && s.body.status) || '';
+    var elapsed = Math.round((Date.now() - start) / 1000);
+    if (st === 'IN_QUEUE') onStatus && onStatus('En file d\'attente' + (s.body.queue_position != null ? ' (position ' + (s.body.queue_position + 1) + ')' : '') + ' · ' + elapsed + ' s');
+    else if (st === 'IN_PROGRESS') onStatus && onStatus('Création en cours · ' + elapsed + ' s');
+    else if (st === 'COMPLETED') break;
+  }
+  var out = await falFetch(responseUrl);
+  if (!out.res.ok) throw new Error(explainError(out.res.status, out.body));
+  return out.body;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// IMAGES
+// ══════════════════════════════════════════════════════════════════
+function loadImage(src) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    img.onload = function () { resolve(img); };
+    img.onerror = function () { reject(new Error('Image illisible')); };
+    img.src = src;
+  });
+}
+function fileToDataUrl(file) {
+  return new Promise(function (resolve, reject) {
+    var fr = new FileReader();
+    fr.onload = function () { resolve(fr.result); };
+    fr.onerror = reject;
+    fr.readAsDataURL(file);
+  });
+}
+// Redimensionne en haute qualité (max 2048 px) pour un envoi rapide sans perte visible
+async function prepareImage(file) {
+  var raw = await fileToDataUrl(file);
+  var img = await loadImage(raw);
+  var scale = Math.min(1, MAX_UPLOAD_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+  var w = Math.round(img.naturalWidth * scale), h = Math.round(img.naturalHeight * scale);
+  var c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  var ctx = c.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, w, h);
+  return { id: uid(), dataUrl: c.toDataURL('image/jpeg', 0.93), w: w, h: h, name: file.name || 'photo' };
+}
+// Recadre en 9:16 avec un fond flouté (utilisé quand la mise en scène IA est désactivée)
+async function toVertical(dataUrl) {
+  var img = await loadImage(dataUrl);
+  var W = 1080, H = 1920;
+  var c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  var ctx = c.getContext('2d');
+  var cover = Math.max(W / img.width, H / img.height);
+  ctx.filter = 'blur(40px) brightness(0.9)';
+  ctx.drawImage(img, (W - img.width * cover) / 2, (H - img.height * cover) / 2, img.width * cover, img.height * cover);
+  ctx.filter = 'none';
+  var fit = Math.min(W / img.width, H / img.height);
+  ctx.drawImage(img, (W - img.width * fit) / 2, (H - img.height * fit) / 2, img.width * fit, img.height * fit);
+  return c.toDataURL('image/jpeg', 0.93);
+}
+async function addFiles(files) {
+  var list = Array.prototype.filter.call(files, function (f) { return /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name); });
+  if (!list.length) { toast('Aucune image reconnue', 'warn'); return; }
+  var ok = 0;
+  for (var i = 0; i < list.length; i++) {
+    try { state.images.push(await prepareImage(list[i])); ok++; }
+    catch (e) { toast('« ' + list[i].name + ' » n\'a pas pu être lue (format non supporté par ce navigateur)', 'error'); }
+  }
+  renderThumbs();
+  if (ok) toast(ok + ' photo' + (ok > 1 ? 's' : '') + ' ajoutée' + (ok > 1 ? 's' : ''), 'success');
+}
+function renderThumbs() {
+  var g = $('thumbs');
+  g.innerHTML = '';
+  state.images.forEach(function (im) {
+    var d = document.createElement('div');
+    d.className = 'thumb';
+    d.innerHTML = '<img alt=""><button title="Retirer">✕</button>';
+    d.querySelector('img').src = im.dataUrl;
+    d.querySelector('button').onclick = function () {
+      state.images = state.images.filter(function (x) { return x.id !== im.id; });
+      renderThumbs();
+    };
+    g.appendChild(d);
+  });
+  updateGenerate();
+}
+function initUpload() {
+  var zone = $('upload-zone'), input = $('file-input');
+  input.onchange = function () { addFiles(input.files); input.value = ''; };
+  ['dragenter', 'dragover'].forEach(function (ev) { zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add('drag'); }); });
+  ['dragleave', 'drop'].forEach(function (ev) { zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.remove('drag'); }); });
+  zone.addEventListener('drop', function (e) { if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// INTERFACE
+// ══════════════════════════════════════════════════════════════════
+function fillSelect(sel, items, valueKey, labelKey, selected) {
+  sel.innerHTML = '';
+  items.forEach(function (it) {
+    var o = document.createElement('option');
+    o.value = it[valueKey]; o.textContent = it[labelKey];
+    if (it[valueKey] === selected) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+function renderPresets() {
+  var box = $('presets');
+  box.innerHTML = '';
+  PRESETS[state.mode].forEach(function (p) {
+    var b = document.createElement('button');
+    b.className = 'chip'; b.type = 'button'; b.textContent = p.l;
+    b.onclick = function () { $('main-prompt').value = p.t; $('main-prompt').focus(); };
+    box.appendChild(b);
+  });
+}
+function renderStyles() {
+  var box = $('styles');
+  box.innerHTML = '';
+  AMBIANCES.forEach(function (a) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'style' + (state.ambiance[state.mode] === a.id ? ' on' : '');
+    b.innerHTML = '<div class="s-name"><span>' + a.emoji + '</span>' + esc(a.name) + '</div><div class="s-desc">' + esc(a.desc) + '</div>';
+    b.onclick = function () { state.ambiance[state.mode] = a.id; renderStyles(); };
+    box.appendChild(b);
+  });
+}
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('active', t.dataset.mode === mode); });
+  var info = MODE_INFO[mode];
+  var isVideo = mode === 'tiktok';
+  $('opts-video').classList.toggle('hidden', !isVideo);
+  $('opts-photo').classList.toggle('hidden', isVideo);
+  $('settings-sub').textContent = info.sub;
+  if (!isVideo) {
+    fillSelect($('photo-format'), FORMATS[mode], 'v', 'n', info.format);
+    $('format-label').textContent = mode === 'site' ? 'Emplacement sur le site' : 'Format';
+    $('photo-bg').value = info.bg;
+    $('photo-light').value = info.light;
+    if (mode === 'site') { $('photo-ext').value = 'webp'; $('photo-res').value = '2K'; }
+    else { $('photo-ext').value = 'png'; }
+  }
+  renderPresets();
+  renderStyles();
+  updateGenerate();
+}
+function estimateCost() {
+  var n = state.images.length;
+  if (state.mode === 'tiktok') {
+    var m = byId(VIDEO_MODELS, $('video-model').value);
+    var per = m.perSec * parseInt($('video-duration').value, 10) + ($('video-staging').checked ? STAGING_MODEL.price['2K'] : 0);
+    return { count: n * parseInt($('video-count').value, 10), unit: per, word: 'vidéo' };
+  }
+  var pm = byId(PHOTO_MODELS, $('photo-model').value);
+  var cnt = parseInt($('photo-count').value, 10);
+  return { count: n * cnt, unit: pm.price[pm.hasRes ? $('photo-res').value : '1K'], word: 'photo' };
+}
+function updateGenerate() {
+  var btn = $('generate-btn');
+  var n = state.images.length;
+  var est = estimateCost();
+  $('generate-label').textContent = MODE_INFO[state.mode].label;
+  var sub;
+  if (!getKey()) sub = 'Enregistrez d\'abord votre clé API';
+  else if (!n) sub = 'Ajoutez au moins une photo';
+  else sub = est.count + ' ' + est.word + (est.count > 1 ? 's' : '') + ' · ≈ ' + (est.count * est.unit).toFixed(2) + ' $ de crédits';
+  $('generate-sub').textContent = state.running ? 'Création en cours…' : sub;
+  btn.disabled = state.running || !n || !getKey();
+  $('cost-hint').textContent = 'Coût indicatif : ≈ ' + est.unit.toFixed(2) + ' $ par ' + est.word + ' (tarifs fal.ai, peuvent évoluer).';
+}
+function initUI() {
+  fillSelect($('video-model'), VIDEO_MODELS, 'id', 'name', VIDEO_MODELS[0].id);
+  fillSelect($('photo-model'), PHOTO_MODELS, 'id', 'name', PHOTO_MODELS[0].id);
+  document.querySelectorAll('.bg-select').forEach(function (s) { fillSelect(s, BACKGROUNDS, 'id', 'name'); });
+  document.querySelectorAll('.light-select').forEach(function (s) { fillSelect(s, LIGHTS, 'id', 'name'); });
+  $('video-bg').value = MODE_INFO.tiktok.bg;
+  $('video-light').value = MODE_INFO.tiktok.light;
+  document.querySelectorAll('.tab').forEach(function (t) { t.onclick = function () { if (!state.running) setMode(t.dataset.mode); else toast('Patientez jusqu\'à la fin de la création en cours', 'warn'); }; });
+  document.querySelectorAll('select').forEach(function (s) { s.addEventListener('change', updateGenerate); });
+  $('video-staging').onchange = function () { $('staging-opts').classList.toggle('hidden', !this.checked); updateGenerate(); };
+  $('photo-model').addEventListener('change', function () {
+    var m = byId(PHOTO_MODELS, this.value);
+    $('photo-res').disabled = !m.hasRes;
+  });
+  $('generate-btn').onclick = run;
+  $('stop-btn').onclick = function () { state.stop = true; toast('Arrêt après la création en cours', 'warn'); };
+  $('lb-close').onclick = closeLightbox;
+  $('lightbox').onclick = function (e) { if (e.target === this) closeLightbox(); };
+  document.querySelectorAll('#gal-filters .chip').forEach(function (c) {
+    c.onclick = function () {
+      state.filter = c.dataset.f;
+      document.querySelectorAll('#gal-filters .chip').forEach(function (x) { x.classList.toggle('on', x === c); });
+      renderGallery();
+    };
+  });
+  $('gal-clear').onclick = function (e) {
+    e.preventDefault();
+    if (!state.gallery.length || !confirm('Vider la galerie ? (pensez à télécharger vos créations avant)')) return;
+    state.gallery = []; saveGallery(); renderGallery();
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CONSTRUCTION DES PROMPTS
+// ══════════════════════════════════════════════════════════════════
+function ambiancePrompt() { return byId(AMBIANCES, state.ambiance[state.mode]).p; }
+function userVision() { return $('main-prompt').value.trim(); }
+
+function photoPrompt(format, bgId, lightId, variant) {
+  var bg = byId(BACKGROUNDS, bgId), light = byId(LIGHTS, lightId);
+  var parts = [];
+  if (state.mode === 'site') parts.push('Create a premium website image (' + format + ') for an artisan alabaster lamp brand. Elegant composition with generous negative space suitable for overlaid text.');
+  else if (bgId === 'white') parts.push('Create a flawless professional e-commerce product photo of the alabaster lamp.');
+  else parts.push('Create a premium, photorealistic lifestyle product photograph of the alabaster lamp, like a high-end interior design catalogue.');
+  parts.push('Setting: the lamp is placed ' + bg.p + '.');
+  parts.push('Lighting: ' + light.p + '.');
+  var amb = ambiancePrompt();
+  if (amb) parts.push('Mood: ' + amb + '.');
+  var v = userVision();
+  if (v) parts.push('Art direction from the client (in French): « ' + v + ' »');
+  parts.push('Shot on a full-frame camera with an 85mm lens, natural depth of field, true-to-life colours, ultra sharp details on the stone texture, high dynamic range, magazine quality.');
+  if (variant > 0) parts.push('Variation #' + (variant + 1) + ': choose a slightly different camera angle and composition.');
+  parts.push(FIDELITY);
+  return parts.join(' ');
+}
+
+function stagingPrompt() {
+  var bg = byId(BACKGROUNDS, $('video-bg').value), light = byId(LIGHTS, $('video-light').value);
+  var parts = [
+    'Recompose this photo as a vertical 9:16 photorealistic scene for a TikTok video, lamp as the hero subject, well centered with room around it.',
+    'Setting: the lamp is placed ' + bg.p + '.',
+    'Lighting: ' + light.p + '.'
+  ];
+  var amb = ambiancePrompt();
+  if (amb) parts.push('Mood: ' + amb + '.');
+  var v = userVision();
+  if (v) parts.push('Art direction from the client (in French): « ' + v + ' »');
+  parts.push('Cinematic, cosy, premium, true-to-life colours.');
+  parts.push(FIDELITY);
+  return parts.join(' ');
+}
+
+function videoPrompt(variant) {
+  var motionKey = $('video-motion').value;
+  if (motionKey === 'random' || variant > 0) {
+    var keys = Object.keys(MOTIONS);
+    motionKey = motionKey === 'random' ? pick(keys) : keys[(keys.indexOf(motionKey) + variant) % keys.length];
+  }
+  var parts = [];
+  var v = userVision();
+  if (v) parts.push(v);
+  parts.push('Camera and motion: ' + MOTIONS[motionKey] + ', ' + INTENSITY[$('video-intensity').value] + '.');
+  var amb = ambiancePrompt();
+  if (amb) parts.push('Mood: ' + amb + '.');
+  parts.push('Photorealistic, cinematic, cosy premium atmosphere, warm light glowing through the translucent alabaster, smooth and stable, high detail, vertical video.');
+  parts.push('The alabaster lamp keeps exactly the same shape, proportions and stone veining throughout the whole video, no morphing.');
+  return parts.join(' ');
+}
+var NEGATIVE = 'blur, distortion, low quality, morphing lamp, deformed shape, changing product, extra lamps, flicker artifacts, text, watermark, logo, cartoon';
+
+// ══════════════════════════════════════════════════════════════════
+// GÉNÉRATION
+// ══════════════════════════════════════════════════════════════════
+function buildJobs() {
+  var jobs = [];
+  var mode = state.mode;
+  state.images.forEach(function (im, idx) {
+    if (mode === 'tiktok') {
+      var c = parseInt($('video-count').value, 10);
+      for (var i = 0; i < c; i++) jobs.push({ kind: 'video', image: im, variant: i, label: 'Vidéo · photo ' + (idx + 1) + (c > 1 ? ' · v' + (i + 1) : '') });
+    } else {
+      jobs.push({ kind: 'image', image: im, variant: 0, count: parseInt($('photo-count').value, 10), label: (mode === 'site' ? 'Visuel site' : 'Photo produit') + ' · photo ' + (idx + 1) });
+    }
+  });
+  return jobs;
+}
+
+function queueRow(job) {
+  var d = document.createElement('div');
+  d.className = 'q-item';
+  d.innerHTML = '<img alt=""><div class="q-main"><div class="q-name"></div><div class="q-status">En attente</div></div><span class="q-ico">·</span>';
+  d.querySelector('img').src = job.image.dataUrl;
+  d.querySelector('.q-name').textContent = job.label;
+  $('queue').appendChild(d);
+  job.el = d;
+  job.set = function (cls, text, icon) {
+    d.className = 'q-item ' + (cls || '');
+    d.querySelector('.q-status').textContent = text;
+    var ico = d.querySelector('.q-ico');
+    if (cls === 'run') { ico.className = 'spin q-ico'; ico.textContent = ''; }
+    else { ico.className = 'q-ico'; ico.textContent = icon || '·'; }
+  };
+}
+
+async function runImageJob(job) {
+  var model = byId(PHOTO_MODELS, $('photo-model').value);
+  var format = $('photo-format').value;
+  var input = {
+    prompt: photoPrompt(format, $('photo-bg').value, $('photo-light').value, job.variant),
+    image_urls: [job.image.dataUrl],
+    num_images: job.count,
+    aspect_ratio: format,
+    output_format: $('photo-ext').value
+  };
+  if (model.hasRes) input.resolution = $('photo-res').value;
+  var result = await falRun(model.id, input, function (s) { job.set('run', s); });
+  var imgs = (result && result.images) || [];
+  if (!imgs.length) throw new Error('Aucune image renvoyée (contenu refusé par le filtre ?). Essayez un autre prompt.');
+  imgs.forEach(function (im) {
+    addToGallery({ type: 'image', url: im.url, ratio: format === 'auto' ? '' : format, mode: state.mode, ext: $('photo-ext').value, res: model.hasRes ? $('photo-res').value : '' });
+  });
+  return imgs.length + ' image' + (imgs.length > 1 ? 's' : '');
+}
+
+async function runVideoJob(job) {
+  var model = byId(VIDEO_MODELS, $('video-model').value);
+  var startImage;
+  if ($('video-staging').checked) {
+    job.set('run', 'Mise en scène 9:16…');
+    var staged = await falRun(STAGING_MODEL.id, {
+      prompt: stagingPrompt(),
+      image_urls: [job.image.dataUrl],
+      num_images: 1,
+      aspect_ratio: '9:16',
+      resolution: '2K',
+      output_format: 'jpeg'
+    }, function (s) { job.set('run', 'Mise en scène · ' + s); });
+    var si = staged && staged.images && staged.images[0];
+    if (!si) throw new Error('La mise en scène n\'a rien renvoyé. Essayez sans la mise en scène IA.');
+    startImage = si.url;
+    addToGallery({ type: 'image', url: si.url, ratio: '9:16', mode: 'tiktok', ext: 'jpeg', note: 'Scène' });
+  } else {
+    startImage = await toVertical(job.image.dataUrl);
+  }
+  job.set('run', 'Animation…');
+  var input = {
+    prompt: videoPrompt(job.variant),
+    duration: $('video-duration').value,
+    negative_prompt: NEGATIVE,
+    cfg_scale: 0.5
+  };
+  input[model.imageField] = startImage;
+  if (model.noAudio) input.generate_audio = false;
+  var result = await falRun(model.id, input, function (s) { job.set('run', 'Animation · ' + s); });
+  var url = result && result.video && result.video.url;
+  if (!url) throw new Error('Aucune vidéo renvoyée. Réessayez.');
+  addToGallery({ type: 'video', url: url, ratio: '9:16', mode: 'tiktok', ext: 'mp4' });
+  return 'Vidéo prête';
+}
+
+async function run() {
+  if (state.running) return;
+  if (!getKey()) { toast('Enregistrez votre clé API fal.ai', 'error'); $('api-body').classList.remove('hidden'); return; }
+  if (!state.images.length) { toast('Ajoutez au moins une photo', 'warn'); return; }
+  var jobs = buildJobs();
+  state.running = true; state.stop = false;
+  $('queue').innerHTML = '';
+  $('queue-card').classList.remove('hidden');
+  $('stop-btn').classList.remove('hidden');
+  jobs.forEach(queueRow);
+  updateGenerate();
+  keepAwake(true);
+  var done = 0, failed = 0, fatal = false;
+  // Les photos partent 2 par 2, les vidéos 2 par 2 aussi (fal gère la file côté serveur)
+  var concurrency = 2, next = 0;
+  function summary() { $('queue-summary').textContent = (done + failed) + ' / ' + jobs.length + (failed ? ' · ' + failed + ' échec' + (failed > 1 ? 's' : '') : ''); }
+  summary();
+  async function worker() {
+    while (next < jobs.length && !state.stop && !fatal) {
+      var job = jobs[next++];
+      job.set('run', 'Envoi…');
+      try {
+        var msg = job.kind === 'video' ? await runVideoJob(job) : await runImageJob(job);
+        job.set('done', msg, '✓');
+        done++;
+      } catch (e) {
+        failed++;
+        job.set('fail', e.message || String(e), '✕');
+        if (/Clé API refusée|Crédits fal\.ai épuisés/.test(e.message)) { fatal = true; toast(e.message, 'error', 6000); }
+      }
+      summary();
+    }
+  }
+  var workers = [];
+  for (var w = 0; w < concurrency; w++) workers.push(worker());
+  await Promise.all(workers);
+  jobs.slice(next).forEach(function (j) { j.set('', 'Annulé', '–'); });
+  state.running = false;
+  $('stop-btn').classList.add('hidden');
+  keepAwake(false);
+  updateGenerate();
+  if (!fatal) toast(done ? '✨ ' + done + ' création' + (done > 1 ? 's' : '') + ' terminée' + (done > 1 ? 's' : '') : 'Aucune création réussie', done ? 'success' : 'error', 4000);
+}
+
+// Garde l'écran allumé pendant la génération (API Wake Lock)
+async function keepAwake(on) {
+  try {
+    if (on && 'wakeLock' in navigator) state.wakeLock = await navigator.wakeLock.request('screen');
+    else if (!on && state.wakeLock) { await state.wakeLock.release(); state.wakeLock = null; }
+  } catch (e) {}
+}
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'visible' && state.running) keepAwake(true);
+});
+window.addEventListener('beforeunload', function (e) { if (state.running) { e.preventDefault(); e.returnValue = ''; } });
+
+// ══════════════════════════════════════════════════════════════════
+// GALERIE
+// ══════════════════════════════════════════════════════════════════
+function saveGallery() { lsSet(GALLERY_STORAGE, JSON.stringify(state.gallery.slice(0, 150))); }
+function loadGallery() {
+  try { state.gallery = JSON.parse(lsGet(GALLERY_STORAGE) || '[]') || []; } catch (e) { state.gallery = []; }
+}
+function addToGallery(item) {
+  item.id = uid();
+  item.date = Date.now();
+  state.gallery.unshift(item);
+  saveGallery();
+  renderGallery();
+}
+function fileName(item) {
+  var d = new Date(item.date);
+  var stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '-' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0') + String(d.getSeconds()).padStart(2, '0');
+  var kind = item.type === 'video' ? 'tiktok' : (item.mode === 'site' ? 'site' : 'produit');
+  var ext = item.ext === 'jpeg' ? 'jpg' : (item.ext || (item.type === 'video' ? 'mp4' : 'png'));
+  return 'albea-' + kind + '-' + stamp + '.' + ext;
+}
+async function download(item, btn) {
+  var old = btn.textContent;
+  btn.textContent = '…';
+  try {
+    var r = await fetch(item.url);
+    if (!r.ok) throw new Error();
+    var blob = await r.blob();
+    var name = fileName(item);
+    // Sur mobile : partage natif (enregistrer dans Photos, envoyer vers TikTok…)
+    var file = null;
+    try { file = new File([blob], name, { type: blob.type }); } catch (e) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] }) && /iPhone|iPad|Android/i.test(navigator.userAgent)) {
+      try { await navigator.share({ files: [file] }); btn.textContent = old; return; } catch (e) { if (e && e.name === 'AbortError') { btn.textContent = old; return; } }
+    }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+    toast('Téléchargé ✓', 'success');
+  } catch (e) {
+    window.open(item.url, '_blank');
+    toast('Fichier ouvert dans un onglet : appui long / clic droit → Enregistrer', 'warn', 5000);
+  }
+  btn.textContent = old;
+}
+async function animatePhoto(item) {
+  if (state.running) { toast('Patientez jusqu\'à la fin de la création en cours', 'warn'); return; }
+  try {
+    var r = await fetch(item.url);
+    var blob = await r.blob();
+    var f = new File([blob], 'scene.' + (item.ext || 'png'), { type: blob.type || 'image/png' });
+    state.images = [];
+    await addFiles([f]);
+    setMode('tiktok');
+    $('video-staging').checked = false;
+    $('staging-opts').classList.add('hidden');
+    updateGenerate();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast('Photo prête à être animée : vérifiez les réglages puis « Créer les vidéos »', 'success', 5000);
+  } catch (e) { toast('Impossible de récupérer cette image', 'error'); }
+}
+function openLightbox(item) {
+  var c = $('lb-content');
+  c.innerHTML = '';
+  var el = document.createElement(item.type === 'video' ? 'video' : 'img');
+  el.src = item.url;
+  if (item.type === 'video') { el.controls = true; el.autoplay = true; el.loop = true; el.playsInline = true; }
+  c.appendChild(el);
+  $('lightbox').classList.add('open');
+}
+function closeLightbox() { $('lightbox').classList.remove('open'); $('lb-content').innerHTML = ''; }
+function renderGallery() {
+  var g = $('gallery');
+  g.innerHTML = '';
+  var items = state.gallery.filter(function (i) { return state.filter === 'all' || i.type === state.filter; });
+  $('gallery-empty').classList.toggle('hidden', items.length > 0);
+  items.forEach(function (item) {
+    var d = document.createElement('div');
+    d.className = 'g-item';
+    var badge = item.type === 'video' ? 'VIDÉO 9:16' : ((item.note ? item.note + ' ' : '') + (item.ratio || '') + (item.res ? ' · ' + item.res : '')).trim().toUpperCase();
+    d.innerHTML = '<div class="g-media"></div><div class="g-foot"></div>';
+    var media = d.querySelector('.g-media');
+    var el;
+    if (item.type === 'video') {
+      el = document.createElement('video');
+      el.src = item.url; el.muted = true; el.loop = true; el.playsInline = true; el.autoplay = true; el.preload = 'metadata';
+    } else {
+      el = document.createElement('img');
+      el.src = item.url; el.loading = 'lazy'; el.alt = 'Création Albéa';
+    }
+    el.onclick = function () { openLightbox(item); };
+    el.onerror = function () { media.innerHTML = '<div class="empty" style="color:#b9aa98;font-size:0.8rem;">Fichier expiré</div>'; };
+    media.appendChild(el);
+    if (badge) { var b = document.createElement('span'); b.className = 'g-badge'; b.textContent = badge; media.appendChild(b); }
+    var foot = d.querySelector('.g-foot');
+    var dl = document.createElement('button');
+    dl.className = 'btn btn-dark btn-small'; dl.textContent = '⬇ Télécharger';
+    dl.onclick = function () { download(item, dl); };
+    foot.appendChild(dl);
+    if (item.type === 'image') {
+      var an = document.createElement('button');
+      an.className = 'btn btn-ghost btn-small'; an.textContent = '🎬 Animer';
+      an.title = 'Transformer cette photo en vidéo TikTok';
+      an.onclick = function () { animatePhoto(item); };
+      foot.appendChild(an);
+    }
+    var rm = document.createElement('button');
+    rm.className = 'btn btn-ghost btn-small'; rm.textContent = '✕'; rm.style.flex = '0 0 auto';
+    rm.title = 'Retirer de la galerie';
+    rm.onclick = function () { state.gallery = state.gallery.filter(function (x) { return x.id !== item.id; }); saveGallery(); renderGallery(); };
+    foot.appendChild(rm);
+    g.appendChild(d);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// DÉMARRAGE
+// ══════════════════════════════════════════════════════════════════
+initUI();
+initUpload();
+initKey();
+loadGallery();
+renderGallery();
+setMode('tiktok');
+</script>
+</body>
+</html>
