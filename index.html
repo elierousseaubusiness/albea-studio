@@ -24,6 +24,10 @@
 // ║     n'importe qui pourrait utiliser vos crédits.                 ║
 // ╚══════════════════════════════════════════════════════════════════╝
 var FAL_API_KEY = "";
+
+// Affichage des coûts : true = votre clé est gratuite, l'app affiche « Gratuit »
+// et le temps estimé au lieu d'un prix. Mettez false pour revoir les prix en $.
+var CLE_GRATUITE = true;
 </script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -271,8 +275,10 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
     </div>
     <div class="key-row" style="margin-top:0.5rem;">
       <button class="btn btn-ghost btn-small" id="api-show">👁 Afficher</button>
+      <button class="btn btn-ghost btn-small" id="api-test">✓ Tester ma clé</button>
       <button class="btn btn-ghost btn-small" id="api-clear">Supprimer la clé</button>
     </div>
+    <p class="hint" id="api-test-result"></p>
     <p class="hint">
       Créez votre clé sur <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>
       (compte gratuit, les générations consomment des crédits — rechargeables sur <a href="https://fal.ai/dashboard/billing" target="_blank" rel="noopener">fal.ai/dashboard/billing</a>).
@@ -438,7 +444,7 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
     <span id="generate-label">Créer les vidéos</span>
     <small id="generate-sub">Ajoutez au moins une photo</small>
   </button>
-  <button class="btn btn-stop hidden" id="stop-btn">⏹ Arrêter après la création en cours</button>
+  <button class="btn btn-stop hidden" id="stop-btn">⏹ Arrêter la génération</button>
 </div>
 
 <!-- ── File d'attente ─────────────────────── -->
@@ -475,19 +481,21 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
 var QUEUE_BASE = 'https://queue.fal.run/';
 var KEY_STORAGE = 'albea_fal_key';
 var GALLERY_STORAGE = 'albea_gallery_v2';
+var COUNT_STORAGE = 'albea_total_creations';
+var CONCURRENCY = 2;
 var POLL_MS = 4000;
 var MAX_WAIT_MS = 25 * 60 * 1000;
 var MAX_UPLOAD_SIDE = 2048;
 
 // Modèles fal.ai (prix indicatifs en $ — vérifiez sur fal.ai/pricing)
 var VIDEO_MODELS = [
-  { id: 'fal-ai/kling-video/v2.1/standard/image-to-video', name: 'Kling 2.1 Standard · économique', imageField: 'image_url', perSec: 0.05 },
-  { id: 'fal-ai/kling-video/v2.1/pro/image-to-video', name: 'Kling 2.1 Pro · très fluide', imageField: 'image_url', perSec: 0.09 },
-  { id: 'fal-ai/kling-video/v3/standard/image-to-video', name: 'Kling 3 Standard · dernière génération', imageField: 'start_image_url', perSec: 0.084, noAudio: true }
+  { id: 'fal-ai/kling-video/v2.1/standard/image-to-video', name: 'Kling 2.1 Standard · économique', imageField: 'image_url', perSec: 0.05, secs: 150 },
+  { id: 'fal-ai/kling-video/v2.1/pro/image-to-video', name: 'Kling 2.1 Pro · très fluide', imageField: 'image_url', perSec: 0.09, secs: 240 },
+  { id: 'fal-ai/kling-video/v3/standard/image-to-video', name: 'Kling 3 Standard · dernière génération', imageField: 'start_image_url', perSec: 0.084, secs: 180, noAudio: true }
 ];
 var PHOTO_MODELS = [
-  { id: 'fal-ai/nano-banana-pro/edit', name: 'Nano Banana Pro · qualité maximale', price: { '1K': 0.15, '2K': 0.15, '4K': 0.30 }, hasRes: true },
-  { id: 'fal-ai/nano-banana/edit', name: 'Nano Banana · rapide & économique', price: { '1K': 0.04, '2K': 0.04, '4K': 0.04 }, hasRes: false }
+  { id: 'fal-ai/nano-banana-pro/edit', name: 'Nano Banana Pro · qualité maximale', price: { '1K': 0.15, '2K': 0.15, '4K': 0.30 }, hasRes: true, secs: 40 },
+  { id: 'fal-ai/nano-banana/edit', name: 'Nano Banana · rapide & économique', price: { '1K': 0.04, '2K': 0.04, '4K': 0.04 }, hasRes: false, secs: 15 }
 ];
 var STAGING_MODEL = PHOTO_MODELS[0];
 
@@ -658,6 +666,7 @@ function initKey() {
     var i = $('api-key-input');
     i.type = i.type === 'password' ? 'text' : 'password';
   };
+  $('api-test').onclick = testKey;
   $('api-clear').onclick = function () {
     lsDel(KEY_STORAGE);
     renderKey();
@@ -667,9 +676,37 @@ function initKey() {
   renderKey();
 }
 
+// Vérifie la clé sans rien générer (aucun crédit consommé) :
+// on interroge le statut d'une requête fictive — fal répond 401 si la clé est mauvaise.
+function keyFormatWarning(k) {
+  if (/^sk-/i.test(k)) return 'Cette clé commence par « sk- » : c\'est le format OpenAI/DeepSeek, pas fal.ai.';
+  if (/^AIza/.test(k)) return 'Cette clé ressemble à une clé Google (Gemini), pas à une clé fal.ai.';
+  if (k.indexOf(':') < 0) return 'Une clé fal.ai a normalement la forme « identifiant:secret » (avec deux-points).';
+  return '';
+}
+async function testKey() {
+  var out = $('api-test-result');
+  var typed = $('api-key-input').value.trim().replace(/^Key\s+/i, '');
+  var k = typed || getKey();
+  if (!k) { out.textContent = 'Aucune clé à tester.'; return; }
+  var warn = keyFormatWarning(k);
+  out.textContent = 'Test en cours…';
+  $('api-body').classList.remove('hidden');
+  try {
+    var res = await fetch(QUEUE_BASE + 'fal-ai/nano-banana/edit/requests/00000000-0000-0000-0000-000000000000/status', { headers: { 'Authorization': 'Key ' + k } });
+    var body = null; try { body = await res.json(); } catch (e) {}
+    if (res.status === 401) out.innerHTML = '❌ <strong>Clé refusée par fal.ai.</strong> ' + esc(warn || 'Vérifiez qu\'elle est complète (copiez-la en entier).');
+    else if (res.status === 403) out.innerHTML = '⚠️ ' + esc(explainError(403, body));
+    else out.innerHTML = '✅ <strong>Clé valide, reconnue par fal.ai.</strong> Vous pouvez générer.';
+  } catch (e) {
+    out.textContent = '⚠️ Impossible de joindre fal.ai (connexion internet ou bloqueur de publicité).';
+  }
+}
+
 // ══════════════════════════════════════════════════════════════════
 // API fal.ai (file d'attente asynchrone)
 // ══════════════════════════════════════════════════════════════════
+var CREDITS_MSG = 'Crédits fal.ai épuisés : vos crédits gratuits sont consommés, rechargez sur fal.ai/dashboard/billing.';
 function explainError(status, body) {
   var detail = '';
   if (body) {
@@ -681,8 +718,8 @@ function explainError(status, body) {
   var low = (detail || '').toLowerCase();
   if (status === 401) return 'Clé API refusée : vérifiez qu\'elle est complète et valide.';
   if (status === 403 && (low.indexOf('balance') >= 0 || low.indexOf('locked') >= 0 || low.indexOf('credit') >= 0 || low.indexOf('billing') >= 0))
-    return 'Crédits fal.ai épuisés : rechargez sur fal.ai/dashboard/billing.';
-  if (status === 402) return 'Crédits fal.ai épuisés : rechargez sur fal.ai/dashboard/billing.';
+    return CREDITS_MSG;
+  if (status === 402) return CREDITS_MSG;
   if (status === 403) return 'Accès refusé par fal.ai' + (detail ? ' : ' + detail : '');
   if (status === 422) return 'Requête refusée' + (detail ? ' : ' + detail : '') + (low.indexOf('content') >= 0 || low.indexOf('safety') >= 0 ? '' : '');
   if (status === 429) return 'Trop de requêtes simultanées, nouvelle tentative…';
@@ -715,9 +752,14 @@ async function falRun(endpoint, input, onStatus) {
   var job = r.body || {};
   var statusUrl = job.status_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id + '/status');
   var responseUrl = job.response_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id);
+  var cancelUrl = job.cancel_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id + '/cancel');
   var start = Date.now();
   while (true) {
     await sleep(POLL_MS);
+    if (state.cancel) {
+      falFetch(cancelUrl, { method: 'PUT' }).catch(function () {});
+      throw new Error('Annulé');
+    }
     if (Date.now() - start > MAX_WAIT_MS) throw new Error('Délai dépassé (25 min). Réessayez plus tard.');
     var s;
     try { s = await falFetch(statusUrl); } catch (e) { onStatus && onStatus('Connexion instable, on patiente…'); continue; }
@@ -872,29 +914,51 @@ function setMode(mode) {
   renderStyles();
   updateGenerate();
 }
+function fmtDuration(sec) {
+  if (sec < 60) return Math.max(10, Math.round(sec / 10) * 10) + ' s';
+  var m = Math.round(sec / 60);
+  return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + String(m % 60).padStart(2, '0');
+}
 function estimateCost() {
   var n = state.images.length;
   if (state.mode === 'tiktok') {
     var m = byId(VIDEO_MODELS, $('video-model').value);
-    var per = m.perSec * parseInt($('video-duration').value, 10) + ($('video-staging').checked ? STAGING_MODEL.price['2K'] : 0);
-    return { count: n * parseInt($('video-count').value, 10), unit: per, word: 'vidéo' };
+    var dur = parseInt($('video-duration').value, 10);
+    var staging = $('video-staging').checked;
+    var per = m.perSec * dur + (staging ? STAGING_MODEL.price['2K'] : 0);
+    var secs = m.secs * (dur / 5) + (staging ? STAGING_MODEL.secs : 0);
+    return { count: n * parseInt($('video-count').value, 10), unit: per, secs: secs, word: 'vidéo' };
   }
   var pm = byId(PHOTO_MODELS, $('photo-model').value);
   var cnt = parseInt($('photo-count').value, 10);
-  return { count: n * cnt, unit: pm.price[pm.hasRes ? $('photo-res').value : '1K'], word: 'photo' };
+  var res = pm.hasRes ? $('photo-res').value : '1K';
+  var s = pm.secs * (res === '4K' ? 1.6 : 1) + (cnt - 1) * 8;
+  // Les variantes d'une même photo partent en une seule requête
+  return { count: n * cnt, jobs: n, unit: pm.price[res], secs: s, word: 'photo' };
 }
+function totalCreations() { return parseInt(lsGet(COUNT_STORAGE) || '0', 10) || 0; }
 function updateGenerate() {
   var btn = $('generate-btn');
   var n = state.images.length;
   var est = estimateCost();
+  var jobs = est.jobs || est.count;
+  var wall = Math.ceil(jobs / CONCURRENCY) * est.secs;
   $('generate-label').textContent = MODE_INFO[state.mode].label;
   var sub;
   if (!getKey()) sub = 'Enregistrez d\'abord votre clé API';
   else if (!n) sub = 'Ajoutez au moins une photo';
-  else sub = est.count + ' ' + est.word + (est.count > 1 ? 's' : '') + ' · ≈ ' + (est.count * est.unit).toFixed(2) + ' $ de crédits';
+  else {
+    var plural = est.count > 1 ? 's' : '';
+    sub = est.count + ' ' + est.word + plural + ' · ' +
+      (CLE_GRATUITE ? 'Gratuit' : '≈ ' + (est.count * est.unit).toFixed(2) + ' $') +
+      ' · ≈ ' + fmtDuration(wall);
+  }
   $('generate-sub').textContent = state.running ? 'Création en cours…' : sub;
   btn.disabled = state.running || !n || !getKey();
-  $('cost-hint').textContent = 'Coût indicatif : ≈ ' + est.unit.toFixed(2) + ' $ par ' + est.word + ' (tarifs fal.ai, peuvent évoluer).';
+  var total = totalCreations();
+  $('cost-hint').textContent = CLE_GRATUITE
+    ? 'Génération gratuite avec votre clé · environ ' + fmtDuration(est.secs) + ' par ' + est.word + (total ? ' · ' + total + ' création' + (total > 1 ? 's' : '') + ' réalisée' + (total > 1 ? 's' : '') + ' au total' : '') + '.'
+    : 'Coût indicatif : ≈ ' + est.unit.toFixed(2) + ' $ par ' + est.word + ' (tarifs fal.ai, peuvent évoluer) · environ ' + fmtDuration(est.secs) + ' chacune.';
 }
 function initUI() {
   fillSelect($('video-model'), VIDEO_MODELS, 'id', 'name', VIDEO_MODELS[0].id);
@@ -911,7 +975,11 @@ function initUI() {
     $('photo-res').disabled = !m.hasRes;
   });
   $('generate-btn').onclick = run;
-  $('stop-btn').onclick = function () { state.stop = true; toast('Arrêt après la création en cours', 'warn'); };
+  $('stop-btn').onclick = function () {
+    if (!state.stop) { state.stop = true; $('stop-btn').textContent = '⏹ Annuler aussi les créations en cours'; toast('Plus de nouvelle création. Touchez à nouveau pour annuler celles en cours.', 'warn', 4500); }
+    else { state.cancel = true; toast('Annulation…', 'warn'); }
+  };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
   $('lb-close').onclick = closeLightbox;
   $('lightbox').onclick = function (e) { if (e.target === this) closeLightbox(); };
   document.querySelectorAll('#gal-filters .chip').forEach(function (c) {
@@ -1081,7 +1149,8 @@ async function run() {
   if (!getKey()) { toast('Enregistrez votre clé API fal.ai', 'error'); $('api-body').classList.remove('hidden'); return; }
   if (!state.images.length) { toast('Ajoutez au moins une photo', 'warn'); return; }
   var jobs = buildJobs();
-  state.running = true; state.stop = false;
+  state.running = true; state.stop = false; state.cancel = false;
+  $('stop-btn').textContent = '⏹ Arrêter la génération';
   $('queue').innerHTML = '';
   $('queue-card').classList.remove('hidden');
   $('stop-btn').classList.remove('hidden');
@@ -1090,7 +1159,7 @@ async function run() {
   keepAwake(true);
   var done = 0, failed = 0, fatal = false;
   // Les photos partent 2 par 2, les vidéos 2 par 2 aussi (fal gère la file côté serveur)
-  var concurrency = 2, next = 0;
+  var concurrency = CONCURRENCY, next = 0;
   function summary() { $('queue-summary').textContent = (done + failed) + ' / ' + jobs.length + (failed ? ' · ' + failed + ' échec' + (failed > 1 ? 's' : '') : ''); }
   summary();
   async function worker() {
@@ -1098,10 +1167,19 @@ async function run() {
       var job = jobs[next++];
       job.set('run', 'Envoi…');
       try {
-        var msg = job.kind === 'video' ? await runVideoJob(job) : await runImageJob(job);
+        var msg;
+        try { msg = job.kind === 'video' ? await runVideoJob(job) : await runImageJob(job); }
+        catch (first) {
+          // Une seule nouvelle tentative pour les erreurs passagères (réseau, serveur)
+          if (state.cancel || /Annulé|Clé API|Crédits|refusée|Requête refusée/.test(first.message)) throw first;
+          job.set('run', 'Nouvelle tentative…');
+          await sleep(3000);
+          msg = job.kind === 'video' ? await runVideoJob(job) : await runImageJob(job);
+        }
         job.set('done', msg, '✓');
         done++;
       } catch (e) {
+        if (e.message === 'Annulé') { job.set('', 'Annulé', '–'); summary(); continue; }
         failed++;
         job.set('fail', e.message || String(e), '✕');
         if (/Clé API refusée|Crédits fal\.ai épuisés/.test(e.message)) { fatal = true; toast(e.message, 'error', 6000); }
@@ -1140,6 +1218,7 @@ function loadGallery() {
   try { state.gallery = JSON.parse(lsGet(GALLERY_STORAGE) || '[]') || []; } catch (e) { state.gallery = []; }
 }
 function addToGallery(item) {
+  if (!item.note) lsSet(COUNT_STORAGE, String(totalCreations() + 1));
   item.id = uid();
   item.date = Date.now();
   state.gallery.unshift(item);
