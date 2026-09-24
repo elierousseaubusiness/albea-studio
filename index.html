@@ -10,24 +10,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script>
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  🔑  CLÉ API — À REMPLIR ICI (optionnel)                          ║
+// ║  🔑  CLÉ API AGNES — À REMPLIR ICI                                ║
 // ║                                                                  ║
-// ║  1. Créez un compte sur https://fal.ai                           ║
-// ║  2. Allez sur https://fal.ai/dashboard/keys → "Add key"          ║
-// ║  3. Collez la clé entre les guillemets ci-dessous, ex :          ║
-// ║       var FAL_API_KEY = "a1b2c3d4-....:e5f6....";                ║
+// ║  1. Allez sur https://platform.agnes-ai.com/settings/apiKeys     ║
+// ║  2. Cliquez sur l'icône « copier » à côté de votre clé (sk-...)  ║
+// ║  3. Collez-la entre les guillemets ci-dessous, par exemple :     ║
+// ║       var AGNES_API_KEY = "sk-J7Y93................yPOAxY";      ║
 // ║                                                                  ║
 // ║  Vous pouvez aussi laisser vide et coller la clé directement     ║
 // ║  dans l'application (elle est alors gardée dans ce navigateur).  ║
 // ║                                                                  ║
-// ║  ⚠️ Ne publiez JAMAIS en ligne un fichier contenant votre clé :   ║
-// ║     n'importe qui pourrait utiliser vos crédits.                 ║
+// ║  ⚠️ Ne publiez JAMAIS en ligne un fichier contenant votre clé.    ║
 // ╚══════════════════════════════════════════════════════════════════╝
-var FAL_API_KEY = "";
+var AGNES_API_KEY = "";
 
-// Affichage des coûts : true = votre clé est gratuite, l'app affiche « Gratuit »
-// et le temps estimé au lieu d'un prix. Mettez false pour revoir les prix en $.
-var CLE_GRATUITE = true;
+// Adresse de l'API Agnes. Ne changez que si vous utilisez un relais
+// (voir le fichier proxy/agnes-worker.js et le README).
+var AGNES_BASE = "https://apihub.agnes-ai.com";
 </script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -252,6 +251,15 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
   .g-foot .btn { font-size: 0.66rem; padding: 0.4rem 0.3rem; }
 }
 </style>
+<style>
+.sub-opts { margin-top: 0.8rem; padding: 0.9rem; border-radius: var(--radius-sm); background: #fbf3e6; border: 1px solid var(--border); }
+.sub-opts .sub-title { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; margin-bottom: 0.6rem; }
+.note { font-size: 0.74rem; color: var(--ink-soft); background: #f6ecdc; border-left: 3px solid var(--gold); padding: 0.6rem 0.8rem; border-radius: 8px; margin-top: 0.8rem; line-height: 1.5; }
+.note.err { background: #f8e6e2; border-left-color: var(--error); }
+.limits { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
+.limits span { font-size: 0.68rem; padding: 0.25rem 0.55rem; border-radius: 999px; background: var(--cream); color: var(--ink-soft); }
+.q-more { text-align: center; font-size: 0.74rem; color: var(--ink-dim); font-style: italic; padding: 0.3rem; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -265,24 +273,24 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
 <!-- ── Clé API ───────────────────────────── -->
 <div class="card card-pad" id="api-card">
   <div class="api-head" id="api-head">
-    <div class="card-title">🔑 Connexion IA</div>
+    <div class="card-title">🔑 Connexion Agnes AI</div>
     <span class="api-state"><span class="dot"></span><span id="api-state-text">Aucune clé</span></span>
   </div>
   <div class="api-body" id="api-body">
     <div class="key-row">
-      <input type="password" id="api-key-input" placeholder="Collez votre clé fal.ai ici" autocomplete="off" spellcheck="false">
+      <input type="password" id="api-key-input" placeholder="Collez votre clé Agnes (sk-...)" autocomplete="off" spellcheck="false">
       <button class="btn btn-dark" id="api-save">Enregistrer</button>
     </div>
     <div class="key-row" style="margin-top:0.5rem;">
-      <button class="btn btn-ghost btn-small" id="api-show">👁 Afficher</button>
       <button class="btn btn-ghost btn-small" id="api-test">✓ Tester ma clé</button>
-      <button class="btn btn-ghost btn-small" id="api-clear">Supprimer la clé</button>
+      <button class="btn btn-ghost btn-small" id="api-show">👁 Afficher</button>
+      <button class="btn btn-ghost btn-small" id="api-clear">Supprimer</button>
     </div>
     <p class="hint" id="api-test-result"></p>
     <p class="hint">
-      Créez votre clé sur <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>
-      (compte gratuit, les générations consomment des crédits — rechargeables sur <a href="https://fal.ai/dashboard/billing" target="_blank" rel="noopener">fal.ai/dashboard/billing</a>).
-      La clé reste uniquement dans ce navigateur. Vous pouvez aussi l'écrire une fois pour toutes dans le fichier, ligne <code>var FAL_API_KEY = "";</code> en haut du code.
+      Votre clé se trouve sur <a href="https://platform.agnes-ai.com/settings/apiKeys" target="_blank" rel="noopener">platform.agnes-ai.com/settings/apiKeys</a>
+      (icône « copier » à côté de la clé). Elle reste uniquement dans ce navigateur. Vous pouvez aussi l'écrire une fois pour toutes
+      dans le fichier, ligne <code>var AGNES_API_KEY = "";</code> en haut du code.
     </p>
   </div>
 </div>
@@ -297,7 +305,7 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
 <!-- ── 1. Photos ─────────────────────────── -->
 <div class="card card-pad">
   <div class="card-title"><span class="num">1</span> Vos photos de lampe</div>
-  <p class="card-sub" id="upload-sub">Chaque photo devient une création. L'IA garde votre lampe à l'identique.</p>
+  <p class="card-sub">Chaque photo devient une création. L'IA garde votre lampe à l'identique.</p>
   <label class="upload-zone" id="upload-zone">
     <input type="file" id="file-input" accept="image/*" multiple>
     <div class="u-ico">＋</div>
@@ -310,7 +318,7 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
 <!-- ── 2. Vision ─────────────────────────── -->
 <div class="card card-pad">
   <div class="card-title"><span class="num">2</span> Votre vision</div>
-  <p class="card-sub">Décrivez l'ambiance souhaitée (en français, c'est parfait). Laissez vide pour laisser faire l'ambiance choisie.</p>
+  <p class="card-sub">Décrivez l'ambiance souhaitée (en français, c'est parfait). Laissez vide pour laisser faire vos réglages.</p>
   <textarea id="main-prompt" placeholder="Ex : La lampe est posée sur une console en chêne, dans un salon cosy en fin de journée. Un plaid en lin, une tasse de thé fumante, la lumière traverse l'albâtre et révèle ses veines."></textarea>
   <div class="chips" id="presets"></div>
 </div>
@@ -331,25 +339,63 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
   <div id="opts-video">
     <div class="grid2">
       <div>
-        <label class="lbl">Modèle vidéo</label>
-        <select id="video-model"></select>
+        <label class="lbl">Qui est dans la vidéo ?</label>
+        <select id="video-cast">
+          <option value="product">La lampe seule</option>
+          <option value="woman" selected>Une femme présente la lampe</option>
+          <option value="hands">Des mains seulement</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Style de vidéo</label>
+        <select id="video-style">
+          <option value="ugc" selected>UGC TikTok · filmé au téléphone</option>
+          <option value="cinema">Publicité cinématique</option>
+        </select>
       </div>
       <div>
         <label class="lbl">Durée</label>
         <select id="video-duration">
           <option value="5" selected>5 secondes</option>
+          <option value="8">8 secondes</option>
           <option value="10">10 secondes</option>
+          <option value="15">15 secondes</option>
         </select>
       </div>
       <div>
-        <label class="lbl">Mouvement</label>
+        <label class="lbl">Variantes par photo</label>
+        <select id="video-count">
+          <option value="1" selected>1 vidéo</option>
+          <option value="2">2 vidéos</option>
+          <option value="3">3 vidéos</option>
+          <option value="5">5 vidéos</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sub-opts" id="woman-opts">
+      <div class="sub-title">👩 La présentatrice</div>
+      <div class="grid2">
+        <div>
+          <label class="lbl">Profil</label>
+          <select id="video-presenter" class="presenter-select"></select>
+        </div>
+        <div>
+          <label class="lbl">Action</label>
+          <select id="video-action"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:0.8rem;" id="motion-opts">
+      <div>
+        <label class="lbl">Mouvement de caméra</label>
         <select id="video-motion">
           <option value="glow">Lumière qui respire</option>
           <option value="dolly">Travelling lent vers la lampe</option>
           <option value="orbit">Rotation douce autour</option>
           <option value="reveal">Révélation (allumage de la lampe)</option>
           <option value="macro">Macro sur les veines d'albâtre</option>
-          <option value="lifestyle">Scène de vie (main, thé, livre)</option>
           <option value="random">Surprise (aléatoire)</option>
         </select>
       </div>
@@ -361,20 +407,13 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
           <option value="strong">Marquée · dynamique</option>
         </select>
       </div>
-      <div>
-        <label class="lbl">Variantes par photo</label>
-        <select id="video-count">
-          <option value="1" selected>1 vidéo</option>
-          <option value="2">2 vidéos</option>
-          <option value="3">3 vidéos</option>
-        </select>
-      </div>
     </div>
-    <label class="toggle-row">
+
+    <label class="toggle-row" id="staging-row">
       <input type="checkbox" id="video-staging" checked>
       <span>
         <span class="tr-title">Mise en scène IA avant l'animation (recommandé)</span><br>
-        <span class="tr-desc">Recompose d'abord votre photo en 9:16 dans le décor et l'ambiance choisis, puis l'anime. Sinon, la photo est simplement recadrée en vertical.</span>
+        <span class="tr-desc" id="staging-desc">Crée d'abord une image 9:16 ultra réaliste (décor, présentatrice…) avec votre vraie lampe, puis l'anime.</span>
       </span>
     </label>
     <div class="grid2" id="staging-opts" style="margin-top:0.8rem;">
@@ -385,6 +424,13 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
       <div>
         <label class="lbl">Éclairage</label>
         <select id="video-light" class="light-select"></select>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:0.8rem;">
+      <div>
+        <label class="lbl">Modèle vidéo</label>
+        <select id="video-model"></select>
       </div>
     </div>
   </div>
@@ -401,7 +447,7 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
         <select id="photo-res">
           <option value="1K">Standard · 1K</option>
           <option value="2K" selected>Haute · 2K (recommandé)</option>
-          <option value="4K">Ultra · 4K (impression, zoom)</option>
+          <option value="4K">Ultra · 4K (impression, plus lent)</option>
         </select>
       </div>
       <div>
@@ -413,6 +459,19 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
         <select id="photo-light" class="light-select"></select>
       </div>
       <div>
+        <label class="lbl">Présence humaine</label>
+        <select id="photo-cast">
+          <option value="product" selected>Aucune · la lampe seule</option>
+          <option value="woman">Une femme présente la lampe</option>
+          <option value="scene">Une femme dans une scène cosy</option>
+          <option value="hands">Des mains seulement</option>
+        </select>
+      </div>
+      <div id="photo-presenter-wrap" class="hidden">
+        <label class="lbl">Profil de la femme</label>
+        <select id="photo-presenter" class="presenter-select"></select>
+      </div>
+      <div>
         <label class="lbl">Variantes par photo</label>
         <select id="photo-count">
           <option value="1">1 image</option>
@@ -422,20 +481,21 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
         </select>
       </div>
       <div>
-        <label class="lbl">Fichier</label>
-        <select id="photo-ext">
-          <option value="png" selected>PNG (qualité max)</option>
-          <option value="jpeg">JPG (plus léger, web)</option>
-          <option value="webp">WEBP (idéal site web)</option>
-        </select>
-      </div>
-      <div>
         <label class="lbl">Modèle photo</label>
         <select id="photo-model"></select>
       </div>
     </div>
   </div>
+
+  <label class="toggle-row">
+    <input type="checkbox" id="continuous">
+    <span>
+      <span class="tr-title">♾️ Création en continu</span><br>
+      <span class="tr-desc">Enchaîne les créations sans s'arrêter, avec de nouvelles variantes à chaque tour, jusqu'à ce que vous appuyiez sur « Arrêter ». L'app respecte automatiquement les limites d'Agnes.</span>
+    </span>
+  </label>
   <p class="hint" id="cost-hint"></p>
+  <div class="limits" id="limits"></div>
 </div>
 
 <!-- ── Bouton ─────────────────────────────── -->
@@ -465,7 +525,8 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
   </div>
   <div class="gallery" id="gallery"></div>
   <div class="empty" id="gallery-empty">Vos vidéos et photos apparaîtront ici.</div>
-  <p class="hint">Les fichiers sont hébergés temporairement par fal.ai : téléchargez ceux que vous aimez. <a href="#" id="gal-clear">Vider la galerie</a></p>
+  <p class="hint">Les fichiers sont hébergés temporairement par Agnes : téléchargez ceux que vous aimez. <a href="#" id="gal-clear">Vider la galerie</a></p>
+  <p class="note">💡 Sur TikTok, activez l'étiquette « Contenu généré par l'IA » quand vous publiez ces vidéos (surtout celles avec une présentatrice) : c'est obligatoire et ça évite que la vidéo soit limitée.</p>
 </div>
 
 <footer><span class="fleur">✦</span>Albéa &amp; Co · Atelier numérique</footer>
@@ -478,40 +539,45 @@ footer .fleur { color: var(--gold); font-style: normal; display: block; margin-b
 // ══════════════════════════════════════════════════════════════════
 // CONFIGURATION
 // ══════════════════════════════════════════════════════════════════
-var QUEUE_BASE = 'https://queue.fal.run/';
-var KEY_STORAGE = 'albea_fal_key';
-var GALLERY_STORAGE = 'albea_gallery_v2';
+var KEY_STORAGE = 'albea_api_key';
+var GALLERY_STORAGE = 'albea_gallery_v3';
 var COUNT_STORAGE = 'albea_total_creations';
-var CONCURRENCY = 2;
-var POLL_MS = 4000;
-var MAX_WAIT_MS = 25 * 60 * 1000;
-var MAX_UPLOAD_SIDE = 2048;
+var POLL_MS = 6000;
+var MAX_WAIT_MS = 30 * 60 * 1000;
+var MAX_UPLOAD_SIDE = 1536;
+var MAX_QUEUE_ROWS = 40;
 
-// Modèles fal.ai (prix indicatifs en $ — vérifiez sur fal.ai/pricing)
+// Limites du plan gratuit Agnes (requêtes par minute réellement exécutées).
+// Source : github.com/AgnesAI-Labs/AgnesAI-Models (MODEL_CATALOG.md)
+var VIDEO_GAP_MS = 62000;                                       // 1 vidéo / minute
+var IMAGE_GAP_MS = { '1K': 3200, '2K': 6200, '4K': 62000 };     // 20, 10, 1 image(s) / minute
+
 var VIDEO_MODELS = [
-  { id: 'fal-ai/kling-video/v2.1/standard/image-to-video', name: 'Kling 2.1 Standard · économique', imageField: 'image_url', perSec: 0.05, secs: 150 },
-  { id: 'fal-ai/kling-video/v2.1/pro/image-to-video', name: 'Kling 2.1 Pro · très fluide', imageField: 'image_url', perSec: 0.09, secs: 240 },
-  { id: 'fal-ai/kling-video/v3/standard/image-to-video', name: 'Kling 3 Standard · dernière génération', imageField: 'start_image_url', perSec: 0.084, secs: 180, noAudio: true }
+  { id: 'agnes-video-v2.0', name: 'Agnes Video 2.0 · officiel (recommandé)', legacy: true, secs: 150 },
+  { id: 'agnes-video-2.5-flash', name: 'Agnes Video 2.5 Flash · nouveau, 720p', legacy: false, secs: 150 }
 ];
 var PHOTO_MODELS = [
-  { id: 'fal-ai/nano-banana-pro/edit', name: 'Nano Banana Pro · qualité maximale', price: { '1K': 0.15, '2K': 0.15, '4K': 0.30 }, hasRes: true, secs: 40 },
-  { id: 'fal-ai/nano-banana/edit', name: 'Nano Banana · rapide & économique', price: { '1K': 0.04, '2K': 0.04, '4K': 0.04 }, hasRes: false, secs: 15 }
+  { id: 'agnes-image-2.1-flash', name: 'Agnes Image 2.1 Flash · détails & fidélité', secs: 25 },
+  { id: 'agnes-image-2.0-flash', name: 'Agnes Image 2.0 Flash · retouche', secs: 25 }
 ];
 var STAGING_MODEL = PHOTO_MODELS[0];
+// Taille vidéo verticale (multiples de 64, proche du 9:16)
+var VIDEO_W = 768, VIDEO_H = 1344, FPS = 24;
 
-var FIDELITY = 'CRITICAL: the alabaster lamp shown in the reference photo is the real product and must stay strictly identical — same shape, proportions, silhouette, base, stone veining, colour, texture and translucency. Do not redesign it, do not replace it, do not add any other lamp, no text, no logo, no watermark.';
+var FIDELITY = 'CRITICAL: the alabaster lamp from the reference photo is the real product and must stay strictly identical — same shape, proportions, silhouette, base, stone veining, colour, texture and translucency. Do not redesign it, do not replace it, do not add any other lamp. No text, no logo, no watermark.';
+var REALISM = 'Ultra-realistic photograph, indistinguishable from a real photo: natural skin texture with pores, realistic hair, anatomically correct hands with five fingers, natural proportions, true-to-life colours.';
 
 var BACKGROUNDS = [
-  { id: 'cosy', name: 'Salon cosy', p: 'on a warm oak side table in a cosy, softly lit living room with a linen throw, a stack of books and a ceramic vase, cream and terracotta tones, blurred background' },
-  { id: 'bedroom', name: 'Chevet de chambre', p: 'on a bedside table next to a bed with rumpled natural linen sheets, calm evening bedroom, soft warm atmosphere' },
+  { id: 'cosy', name: 'Salon cosy', p: 'on a warm oak side table in a cosy, softly lit living room with a linen throw, a stack of books and a ceramic vase, cream and terracotta tones' },
+  { id: 'bedroom', name: 'Chevet de chambre', p: 'on a bedside table next to a bed with rumpled natural linen sheets, calm evening bedroom' },
   { id: 'wood', name: 'Table en bois chaud', p: 'on a rich walnut wooden table, warm neutral wall behind, minimal and elegant' },
   { id: 'linen', name: 'Lin naturel', p: 'on natural beige linen fabric with soft folds, warm neutral backdrop' },
   { id: 'travertine', name: 'Travertin & pierre', p: 'on a travertine stone plinth, limewashed plaster wall, Mediterranean wabi-sabi interior' },
   { id: 'marble', name: 'Marbre blanc', p: 'on a white Carrara marble surface, soft clean luxury setting' },
-  { id: 'dark', name: 'Fond sombre dramatique', p: 'against a deep dark brown backdrop, low-key moody scene where the lamp is the only light source' },
+  { id: 'dark', name: 'Fond sombre dramatique', p: 'against a deep dark brown backdrop, low-key moody scene where the lamp is the main light source' },
   { id: 'beige', name: 'Fond beige épuré', p: 'on a seamless warm beige studio backdrop, minimal and premium' },
   { id: 'white', name: 'Packshot fond blanc (e-commerce)', p: 'isolated on a pure seamless white background (#FFFFFF) with a soft natural contact shadow, centered e-commerce packshot' },
-  { id: 'keep', name: 'Garder le décor d\'origine', p: 'keep the original setting and background of the photo, only enhance it' }
+  { id: 'keep', name: 'Garder le décor d\'origine', p: 'in the original setting and background of the photo, enhanced' }
 ];
 var LIGHTS = [
   { id: 'warm', name: 'Chaud & doux', p: 'the lamp is switched on and glows with a soft warm amber light through the alabaster, gentle warm ambient light' },
@@ -520,7 +586,35 @@ var LIGHTS = [
   { id: 'daylight', name: 'Lumière naturelle', p: 'soft diffused natural daylight from a side window, airy and fresh, lamp softly lit' },
   { id: 'studio', name: 'Studio professionnel', p: 'professional studio softbox lighting, controlled highlights, crisp product photography' }
 ];
-
+var PRESENTERS = [
+  { id: 'natural', name: 'Femme 25-35 ans · naturelle chic', p: 'a beautiful natural-looking French woman in her late twenties, light natural makeup, soft wavy brown hair, cream knit sweater, effortless chic' },
+  { id: 'elegant', name: 'Femme 35-50 ans · élégante', p: 'an elegant woman in her early forties, refined minimal style, silk blouse in warm neutral tones, hair in a low bun, subtle gold jewellery' },
+  { id: 'boho', name: 'Style bohème', p: 'a young woman with long wavy hair, bohemian linen dress, warm friendly smile, delicate rings' },
+  { id: 'medit', name: 'Look méditerranéen', p: 'a sun-kissed woman with long dark hair, white linen shirt, Mediterranean elegance' },
+  { id: 'blonde', name: 'Blonde · scandinave cosy', p: 'a woman in her thirties with shoulder-length blonde hair, oversized beige cardigan, Scandinavian hygge style' },
+  { id: 'mixed', name: 'Métisse · moderne', p: 'a mixed-race woman in her late twenties with natural curly hair, terracotta ribbed top, modern and warm' },
+  { id: 'random', name: '🎲 Différente à chaque création', p: null }
+];
+var ACTIONS = [
+  { id: 'present', name: 'Présente la lampe face caméra',
+    img: 'she holds the lamp with both hands at chest height and presents it to the camera with a warm genuine smile',
+    vid: 'she gently presents the lamp to the camera, smiles warmly, small natural head movement, glances at the lamp then back at the camera' },
+  { id: 'switchon', name: 'Allume la lampe',
+    img: 'she sits next to the lamp on a table, her hand reaching for it, the lamp softly glowing',
+    vid: 'she switches the lamp on, warm light blooms through the alabaster, she smiles softly and admires it' },
+  { id: 'place', name: 'Pose la lampe sur une table',
+    img: 'she is placing the lamp on a wooden side table with both hands, looking at it with a smile',
+    vid: 'she carefully sets the lamp down on the table, adjusts it slightly and steps back admiring it' },
+  { id: 'unbox', name: 'Déballe la lampe (unboxing)',
+    img: 'she is unboxing the lamp from a kraft paper box with tissue paper, excited and delighted',
+    vid: 'she lifts the lamp out of the box and tissue paper, delighted, turns it slightly to show it to the camera' },
+  { id: 'cosy', name: 'Moment cosy (thé, lecture)',
+    img: 'she is relaxing on a sofa with a cup of tea and a book, the glowing lamp beside her',
+    vid: 'she sips her tea and turns a page, relaxed and serene, the lamp glowing warmly beside her' },
+  { id: 'touch', name: 'Caresse l\'albâtre (détail matière)',
+    img: 'close-up, her fingertips gently touching the illuminated alabaster surface',
+    vid: 'her fingertips slowly glide over the glowing alabaster surface, revealing the natural veins, intimate close-up' }
+];
 var AMBIANCES = [
   { id: 'none', name: 'Aucune', emoji: '○', desc: 'Seulement vos réglages', p: '' },
   { id: 'cosy', name: 'Cocooning', emoji: '🧺', desc: 'Chaleureux et enveloppant', p: 'hygge cocooning mood, warm and inviting, soft textures, calm and intimate' },
@@ -532,14 +626,13 @@ var AMBIANCES = [
   { id: 'night', name: 'Nuit calme', emoji: '🌙', desc: 'Pénombre apaisante', p: 'quiet night, dark peaceful room, the lamp as a warm beacon of light' },
   { id: 'film', name: 'Film argentique', emoji: '🎞️', desc: 'Grain doux, couleurs chaudes', p: 'shot on 35mm film, subtle grain, warm faded colours, nostalgic' }
 ];
-
 var PRESETS = {
   tiktok: [
     { l: '🕯️ Allumage magique', t: 'La pièce est dans la pénombre, puis la lampe s\'allume doucement et la lumière traverse l\'albâtre en révélant ses veines naturelles. Moment calme et cosy.' },
-    { l: '☕ Soirée cosy', t: 'Une main pose une tasse de thé fumante à côté de la lampe allumée, sur une table en bois. Plaid en lin, ambiance cocooning du soir.' },
-    { l: '✨ Poussière dorée', t: 'De fines particules dorées flottent dans la lumière chaude de la lampe. La caméra glisse très lentement vers l\'albâtre.' },
+    { l: '☕ Soirée cosy', t: 'Soirée d\'automne, plaid en lin, tasse de thé fumante à côté de la lampe allumée sur une table en bois. Ambiance cocooning.' },
+    { l: '🎁 Idée cadeau', t: 'Ambiance cadeau : papier kraft, ruban en lin, la lampe est offerte et découverte avec émerveillement.' },
     { l: '🌙 Chevet', t: 'Chambre calme la nuit, la lampe diffuse une lueur ambrée sur les draps en lin. La lumière pulse très légèrement comme une respiration.' },
-    { l: '🎬 Cinématique', t: 'Plan cinématographique, profondeur de champ, lent travelling latéral autour de la lampe allumée, lumière chaude et contrastée.' }
+    { l: '🎬 Cinématique', t: 'Plan cinématographique, profondeur de champ, lent travelling latéral, lumière chaude et contrastée.' }
   ],
   produit: [
     { l: '🤍 Packshot e-commerce', t: 'Packshot produit parfait sur fond blanc pur, lampe centrée, allumée, ombre douce au sol, netteté parfaite.' },
@@ -549,19 +642,17 @@ var PRESETS = {
   ],
   site: [
     { l: '🖼️ Bannière d\'accueil', t: 'Grande image d\'accueil élégante, la lampe allumée placée sur le tiers droit, beaucoup d\'espace libre et épuré à gauche pour du texte.' },
-    { l: '📖 Page « Notre histoire »', t: 'Atelier d\'artisan chaleureux, établi en bois, blocs d\'albâtre brut, la lampe finie allumée au premier plan.' },
+    { l: '📖 Notre histoire', t: 'Atelier d\'artisan chaleureux, établi en bois, blocs d\'albâtre brut, la lampe finie allumée au premier plan.' },
     { l: '🛋️ Intérieur inspirant', t: 'Intérieur contemporain chaleureux et lumineux, la lampe comme pièce maîtresse du décor.' },
     { l: '🎁 Idée cadeau', t: 'La lampe à côté d\'un joli papier kraft et d\'un ruban en lin, ambiance cadeau chaleureuse et raffinée.' }
   ]
 };
-
 var MOTIONS = {
   glow: 'the warm light inside the alabaster lamp gently breathes and pulses, light slowly spreading through the translucent stone, very slow camera push-in',
   dolly: 'slow cinematic dolly-in toward the glowing lamp, smooth and steady camera',
   orbit: 'slow smooth orbital camera movement around the lamp revealing its volume, parallax on the background',
   reveal: 'the room starts dim, then the lamp gradually switches on and warm light blooms through the alabaster, illuminating the scene',
-  macro: 'macro shot slowly gliding across the illuminated alabaster surface, revealing the natural veins and translucency, shallow depth of field',
-  lifestyle: 'a hand gently places a steaming cup of tea next to the glowing lamp, subtle natural lifestyle motion, soft steam rising'
+  macro: 'macro shot slowly gliding across the illuminated alabaster surface, revealing the natural veins and translucency, shallow depth of field'
 };
 var INTENSITY = {
   subtle: 'very subtle, slow, calm and soothing motion',
@@ -589,9 +680,9 @@ var FORMATS = {
   ]
 };
 var MODE_INFO = {
-  tiktok:  { label: 'Créer les vidéos', sub: 'Vidéos verticales 9:16 prêtes pour TikTok, Reels et Shorts.', ambiance: 'cosy', bg: 'cosy', light: 'evening' },
-  produit: { label: 'Créer les photos produit', sub: 'Packshots et photos lifestyle haute définition.', ambiance: 'none', bg: 'white', light: 'studio', format: '1:1' },
-  site:    { label: 'Créer les visuels du site', sub: 'Bannières et visuels au format web, qualité 2K à 4K.', ambiance: 'luxe', bg: 'cosy', light: 'golden', format: '16:9' }
+  tiktok:  { label: 'Créer les vidéos', sub: 'Vidéos verticales 9:16 ultra réalistes pour TikTok, Reels et Shorts.', bg: 'cosy', light: 'evening' },
+  produit: { label: 'Créer les photos produit', sub: 'Packshots et photos lifestyle haute définition.', bg: 'white', light: 'studio', format: '1:1' },
+  site:    { label: 'Créer les visuels du site', sub: 'Bannières et visuels au format web, qualité 2K à 4K.', bg: 'cosy', light: 'golden', format: '16:9' }
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -599,10 +690,11 @@ var MODE_INFO = {
 // ══════════════════════════════════════════════════════════════════
 var state = {
   mode: 'tiktok',
-  images: [],          // { id, dataUrl, w, h, name }
+  images: [],
   ambiance: { tiktok: 'cosy', produit: 'none', site: 'luxe' },
   running: false,
   stop: false,
+  cancel: false,
   gallery: [],
   filter: 'all',
   wakeLock: null
@@ -621,32 +713,48 @@ function toast(msg, type, ms) {
   toastTimer = setTimeout(function () { t.className = 'toast ' + (type || ''); }, ms || 3200);
 }
 function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+async function sleepCancellable(ms) {
+  var end = Date.now() + ms;
+  while (Date.now() < end) {
+    if (state.cancel) throw new Error('Annulé');
+    await sleep(Math.min(1000, end - Date.now()));
+  }
+}
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return list[0]; }
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
 function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+function randomSeed() { return Math.floor(Math.random() * 2147483647); }
+function fmtDuration(sec) {
+  if (sec < 60) return Math.max(10, Math.round(sec / 10) * 10) + ' s';
+  var m = Math.round(sec / 60);
+  return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + String(m % 60).padStart(2, '0');
+}
+function apiBase() { return String(AGNES_BASE || 'https://apihub.agnes-ai.com').replace(/\/+$/, ''); }
 
 // ══════════════════════════════════════════════════════════════════
 // CLÉ API
 // ══════════════════════════════════════════════════════════════════
+function cleanKey(v) { return String(v || '').trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '').trim(); }
 function getKey() {
-  var k = (lsGet(KEY_STORAGE) || '').trim();
-  if (!k && typeof FAL_API_KEY === 'string') k = FAL_API_KEY.trim();
+  var k = cleanKey(lsGet(KEY_STORAGE));
+  if (!k && typeof AGNES_API_KEY === 'string') k = cleanKey(AGNES_API_KEY);
   return k;
 }
 function keySource() {
-  if ((lsGet(KEY_STORAGE) || '').trim()) return 'app';
-  if (typeof FAL_API_KEY === 'string' && FAL_API_KEY.trim()) return 'file';
+  if (cleanKey(lsGet(KEY_STORAGE))) return 'app';
+  if (typeof AGNES_API_KEY === 'string' && cleanKey(AGNES_API_KEY)) return 'file';
   return '';
 }
 function renderKey() {
   var src = keySource();
-  var card = $('api-card');
-  card.classList.toggle('api-ok', !!src);
-  $('api-state-text').textContent = src === 'file' ? 'Clé intégrée au fichier' : src === 'app' ? 'Clé enregistrée' : 'Aucune clé';
+  $('api-card').classList.toggle('api-ok', !!src);
+  var k = getKey();
+  var masked = k ? k.slice(0, 7) + '…' + k.slice(-4) : '';
+  $('api-state-text').textContent = src === 'file' ? 'Clé du fichier · ' + masked : src === 'app' ? 'Clé enregistrée · ' + masked : 'Aucune clé';
   $('api-body').classList.toggle('hidden', !!src);
   $('api-key-input').value = lsGet(KEY_STORAGE) || '';
   updateGenerate();
@@ -654,136 +762,237 @@ function renderKey() {
 function initKey() {
   $('api-head').onclick = function () { $('api-body').classList.toggle('hidden'); };
   $('api-save').onclick = function () {
-    var v = $('api-key-input').value.trim().replace(/^Key\s+/i, '');
+    var v = cleanKey($('api-key-input').value);
     if (!v) { toast('Collez d\'abord votre clé', 'warn'); return; }
+    if (v.indexOf('…') >= 0 || v.indexOf('...') >= 0) { toast('Cette clé est tronquée : utilisez l\'icône « copier » sur Agnes pour copier la clé complète', 'error', 6000); return; }
     if (v.length < 20) { toast('Cette clé semble incomplète', 'warn'); return; }
     lsSet(KEY_STORAGE, v);
     renderKey();
-    toast('Clé enregistrée ✓', 'success');
+    toast('Clé enregistrée ✓ — test en cours…', 'success');
+    testKey();
   };
   $('api-key-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('api-save').click(); });
-  $('api-show').onclick = function () {
-    var i = $('api-key-input');
-    i.type = i.type === 'password' ? 'text' : 'password';
-  };
+  $('api-show').onclick = function () { var i = $('api-key-input'); i.type = i.type === 'password' ? 'text' : 'password'; };
   $('api-test').onclick = testKey;
   $('api-clear').onclick = function () {
     lsDel(KEY_STORAGE);
     renderKey();
     $('api-body').classList.remove('hidden');
+    $('api-test-result').textContent = '';
     toast(keySource() === 'file' ? 'Clé du navigateur supprimée (celle du fichier reste active)' : 'Clé supprimée');
   };
   renderKey();
 }
-
-// Vérifie la clé sans rien générer (aucun crédit consommé) :
-// on interroge le statut d'une requête fictive — fal répond 401 si la clé est mauvaise.
-function keyFormatWarning(k) {
-  if (/^sk-/i.test(k)) return 'Cette clé commence par « sk- » : c\'est le format OpenAI/DeepSeek, pas fal.ai.';
-  if (/^AIza/.test(k)) return 'Cette clé ressemble à une clé Google (Gemini), pas à une clé fal.ai.';
-  if (k.indexOf(':') < 0) return 'Une clé fal.ai a normalement la forme « identifiant:secret » (avec deux-points).';
-  return '';
-}
 async function testKey() {
   var out = $('api-test-result');
-  var typed = $('api-key-input').value.trim().replace(/^Key\s+/i, '');
+  var typed = cleanKey($('api-key-input').value);
   var k = typed || getKey();
-  if (!k) { out.textContent = 'Aucune clé à tester.'; return; }
-  var warn = keyFormatWarning(k);
-  out.textContent = 'Test en cours…';
   $('api-body').classList.remove('hidden');
+  if (!k) { out.textContent = 'Aucune clé à tester.'; return; }
+  var warn = /^sk-/.test(k) ? '' : ' (Attention : une clé Agnes commence normalement par « sk- ».)';
+  out.textContent = 'Test en cours…';
   try {
-    var res = await fetch(QUEUE_BASE + 'fal-ai/nano-banana/edit/requests/00000000-0000-0000-0000-000000000000/status', { headers: { 'Authorization': 'Key ' + k } });
-    var body = null; try { body = await res.json(); } catch (e) {}
-    if (res.status === 401) out.innerHTML = '❌ <strong>Clé refusée par fal.ai.</strong> ' + esc(warn || 'Vérifiez qu\'elle est complète (copiez-la en entier).');
-    else if (res.status === 403) out.innerHTML = '⚠️ ' + esc(explainError(403, body));
-    else out.innerHTML = '✅ <strong>Clé valide, reconnue par fal.ai.</strong> Vous pouvez générer.';
+    var res = await fetch(apiBase() + '/v1/models', { headers: { 'Authorization': 'Bearer ' + k } });
+    if (res.status === 401 || res.status === 403) out.innerHTML = '❌ <strong>Clé refusée par Agnes.</strong> Copiez-la en entier avec l\'icône « copier » sur platform.agnes-ai.com.' + esc(warn);
+    else if (res.ok) out.innerHTML = '✅ <strong>Clé valide et active.</strong> Vous pouvez générer.';
+    else out.innerHTML = '✅ <strong>Agnes répond</strong> (code ' + res.status + '). Lancez une création pour confirmer.';
   } catch (e) {
-    out.textContent = '⚠️ Impossible de joindre fal.ai (connexion internet ou bloqueur de publicité).';
+    out.innerHTML = corsHelpHtml();
   }
+}
+function corsHelpHtml() {
+  return '⚠️ <strong>Le navigateur n\'arrive pas à joindre Agnes.</strong> Vérifiez votre connexion et désactivez un éventuel bloqueur de publicités pour cette page. ' +
+    'Si le problème persiste, Agnes bloque les appels directs depuis un navigateur : suivez l\'étape « Relais » du README (5 minutes, gratuit).';
 }
 
 // ══════════════════════════════════════════════════════════════════
-// API fal.ai (file d'attente asynchrone)
+// API AGNES
 // ══════════════════════════════════════════════════════════════════
-var CREDITS_MSG = 'Crédits fal.ai épuisés : vos crédits gratuits sont consommés, rechargez sur fal.ai/dashboard/billing.';
-function explainError(status, body) {
-  var detail = '';
+// Espace les requêtes pour rester dans les limites du plan gratuit
+function Pacer(gapMs) { this.gap = gapMs; this.next = 0; }
+Pacer.prototype.wait = async function (onWait) {
+  var now = Date.now();
+  var at = Math.max(now, this.next);
+  this.next = at + this.gap;
+  while (Date.now() < at) {
+    if (state.cancel) throw new Error('Annulé');
+    onWait && onWait('Dans la file · départ dans ' + Math.ceil((at - Date.now()) / 1000) + ' s');
+    await sleep(Math.min(1000, at - Date.now()));
+  }
+};
+Pacer.prototype.slowDown = function (ms) { this.next = Math.max(this.next, Date.now() + ms); };
+var videoPacer = new Pacer(VIDEO_GAP_MS);
+var imagePacers = { '1K': new Pacer(IMAGE_GAP_MS['1K']), '2K': new Pacer(IMAGE_GAP_MS['2K']), '4K': new Pacer(IMAGE_GAP_MS['4K']) };
+
+function errorDetail(body, text) {
   if (body) {
-    if (typeof body.detail === 'string') detail = body.detail;
-    else if (Array.isArray(body.detail)) detail = body.detail.map(function (d) { return d.msg || JSON.stringify(d); }).join(' · ');
-    else if (body.message) detail = body.message;
-    else if (body.error) detail = typeof body.error === 'string' ? body.error : JSON.stringify(body.error);
+    var e = body.error;
+    if (e && typeof e === 'object') return e.message || e.code || JSON.stringify(e);
+    if (typeof e === 'string') return e;
+    if (typeof body.detail === 'string') return body.detail;
+    if (Array.isArray(body.detail)) return body.detail.map(function (d) { return d.msg || JSON.stringify(d); }).join(' · ');
+    if (body.message) return body.message;
+    if (body.msg) return body.msg;
   }
+  return (text || '').slice(0, 200);
+}
+function explainError(status, detail) {
   var low = (detail || '').toLowerCase();
-  if (status === 401) return 'Clé API refusée : vérifiez qu\'elle est complète et valide.';
-  if (status === 403 && (low.indexOf('balance') >= 0 || low.indexOf('locked') >= 0 || low.indexOf('credit') >= 0 || low.indexOf('billing') >= 0))
-    return CREDITS_MSG;
-  if (status === 402) return CREDITS_MSG;
-  if (status === 403) return 'Accès refusé par fal.ai' + (detail ? ' : ' + detail : '');
-  if (status === 422) return 'Requête refusée' + (detail ? ' : ' + detail : '') + (low.indexOf('content') >= 0 || low.indexOf('safety') >= 0 ? '' : '');
-  if (status === 429) return 'Trop de requêtes simultanées, nouvelle tentative…';
-  return 'Erreur ' + status + (detail ? ' : ' + detail : '');
+  if (status === 401) return 'Clé API refusée : copiez la clé complète depuis platform.agnes-ai.com (icône « copier »).';
+  if (status === 402 || low.indexOf('quota') >= 0 || low.indexOf('insufficient') >= 0 || low.indexOf('balance') >= 0)
+    return 'Quota Agnes atteint pour le moment' + (detail ? ' (' + detail + ')' : '') + '. Réessayez plus tard.';
+  if (status === 403) return 'Accès refusé par Agnes' + (detail ? ' : ' + detail : '');
+  if (status === 413) return 'Photo trop lourde pour Agnes : utilisez une image plus petite.';
+  if (status === 400 || status === 422) return 'Requête refusée par Agnes' + (detail ? ' : ' + detail : '');
+  return 'Erreur Agnes ' + status + (detail ? ' : ' + detail : '');
 }
 
-async function falFetch(url, opts) {
+// Appel JSON avec gestion des limites (429), du service occupé (503) et du réseau
+async function agnes(path, opts, pacer, onStatus) {
   opts = opts || {};
-  opts.headers = Object.assign({ 'Authorization': 'Key ' + getKey() }, opts.headers || {});
-  var res;
-  try { res = await fetch(url, opts); }
-  catch (e) { throw new Error('Connexion impossible à fal.ai (réseau ou bloqueur de contenu).'); }
-  var body = null;
-  try { body = await res.json(); } catch (e) {}
-  return { res: res, body: body };
+  var headers = { 'Authorization': 'Bearer ' + getKey() };
+  if (opts.body) headers['Content-Type'] = 'application/json';
+  var netFails = 0;
+  for (var attempt = 0; attempt < 8; attempt++) {
+    if (state.cancel) throw new Error('Annulé');
+    var res;
+    try {
+      res = await fetch(apiBase() + path, { method: opts.method || 'GET', headers: headers, body: opts.body });
+    } catch (e) {
+      if (++netFails >= 3) {
+        var err = new Error('Impossible de joindre Agnes depuis ce navigateur (connexion, bloqueur de pub ou blocage CORS). Voir « Relais » dans le README.');
+        err.fatal = true;
+        throw err;
+      }
+      onStatus && onStatus('Connexion instable, nouvelle tentative…');
+      await sleepCancellable(4000 * netFails);
+      continue;
+    }
+    var text = '', body = null;
+    try { text = await res.text(); body = text ? JSON.parse(text) : null; } catch (e) {}
+    if (res.status === 429) {
+      var wait = [20, 40, 60, 90, 120, 180, 240, 300][attempt];
+      if (pacer) pacer.slowDown(wait * 1000);
+      onStatus && onStatus('Limite Agnes atteinte, pause de ' + wait + ' s…');
+      await sleepCancellable(wait * 1000);
+      continue;
+    }
+    if (res.status === 503 || res.status === 502 || res.status === 504) {
+      onStatus && onStatus('Agnes est occupé, on patiente…');
+      await sleepCancellable([5, 10, 20, 30, 45, 60, 60, 60][attempt] * 1000);
+      continue;
+    }
+    if (!res.ok) {
+      var detail = errorDetail(body, text);
+      var e2 = new Error(explainError(res.status, detail));
+      e2.status = res.status;
+      e2.fatal = res.status === 401;
+      throw e2;
+    }
+    return body || {};
+  }
+  throw new Error('Agnes n\'a pas répondu après plusieurs tentatives. Réessayez plus tard.');
 }
 
-async function falRun(endpoint, input, onStatus) {
-  var r, tries = 0;
-  while (true) {
-    r = await falFetch(QUEUE_BASE + endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input)
-    });
-    if (r.res.status === 429 && tries < 5) { tries++; onStatus && onStatus('Serveur saturé, nouvelle tentative…'); await sleep(5000 * tries); continue; }
-    break;
+function toBase64(dataUrl) { return String(dataUrl).replace(/^data:[^,]*,/, ''); }
+
+// ── Images ──
+function sizeFor(ratio, res, fallbackW, fallbackH) {
+  var r;
+  if (ratio === 'auto') r = fallbackW / fallbackH;
+  else { var p = ratio.split(':'); r = parseFloat(p[0]) / parseFloat(p[1]); }
+  var base = { '1K': 1024, '2K': 2048, '4K': 2880 }[res] || 1024;
+  var area = base * base;
+  var w = Math.sqrt(area * r), h = w / r;
+  function r64(x) { return Math.max(256, Math.round(x / 64) * 64); }
+  return r64(w) + 'x' + r64(h);
+}
+async function agnesImage(modelId, prompt, refDataUrl, size, res, onStatus) {
+  var pacer = imagePacers[res] || imagePacers['2K'];
+  await pacer.wait(onStatus);
+  onStatus && onStatus('Création de l\'image…');
+  var body = { model: modelId, prompt: prompt, n: 1, size: size, extra_body: { image: [refDataUrl], response_format: 'url' } };
+  var out;
+  try {
+    out = await agnes('/v1/images/generations', { method: 'POST', body: JSON.stringify(body) }, pacer, onStatus);
+  } catch (e) {
+    // Certaines versions n'acceptent que le base64 brut : seconde tentative
+    if (e.status === 400 || e.status === 422) {
+      body.extra_body = { image: [toBase64(refDataUrl)], response_format: 'b64_json' };
+      await pacer.wait(onStatus);
+      out = await agnes('/v1/images/generations', { method: 'POST', body: JSON.stringify(body) }, pacer, onStatus);
+    } else throw e;
   }
-  if (!r.res.ok) throw new Error(explainError(r.res.status, r.body));
-  var job = r.body || {};
-  var statusUrl = job.status_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id + '/status');
-  var responseUrl = job.response_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id);
-  var cancelUrl = job.cancel_url || (QUEUE_BASE + endpoint + '/requests/' + job.request_id + '/cancel');
-  var start = Date.now();
+  var item = out && out.data && out.data[0];
+  if (!item) throw new Error('Agnes n\'a renvoyé aucune image (contenu refusé ?). Essayez une autre formulation.');
+  if (item.url) return { url: item.url, persist: true };
+  if (item.b64_json) return { url: 'data:image/png;base64,' + item.b64_json, persist: false };
+  throw new Error('Réponse image inattendue.');
+}
+
+// ── Vidéos ──
+async function agnesVideo(model, prompt, startImage, seconds, onStatus) {
+  await videoPacer.wait(onStatus);
+  onStatus && onStatus('Envoi à Agnes…');
+  var body;
+  if (model.legacy) {
+    var frames = Math.min(441, Math.round(seconds * FPS / 8) * 8 + 1);
+    body = { model: model.id, prompt: prompt.text, image: startImage, width: VIDEO_W, height: VIDEO_H,
+             num_frames: frames, frame_rate: FPS, negative_prompt: prompt.negative, seed: randomSeed() };
+  } else {
+    body = { model: model.id, prompt: prompt.text, mode: 'img2video', first_frame: startImage,
+             seconds: String(Math.max(4, Math.min(12, seconds))), size: '720P', aspect_ratio: '9:16', n: 1, seed: randomSeed() };
+  }
+  var created;
+  try {
+    created = await agnes('/v1/videos', { method: 'POST', body: JSON.stringify(body) }, videoPacer, onStatus);
+  } catch (e) {
+    if ((e.status === 400 || e.status === 422) && /^data:/.test(startImage)) {
+      if (model.legacy) body.image = toBase64(startImage); else body.first_frame = toBase64(startImage);
+      await videoPacer.wait(onStatus);
+      created = await agnes('/v1/videos', { method: 'POST', body: JSON.stringify(body) }, videoPacer, onStatus);
+    } else throw e;
+  }
+  var videoId = created.video_id || (created.data && created.data.video_id) || created.id || created.task_id;
+  if (!videoId) throw new Error('Agnes n\'a pas renvoyé d\'identifiant de vidéo.');
+  var pollPath = /^task_/.test(videoId) && !created.video_id
+    ? '/v1/videos/' + encodeURIComponent(videoId)
+    : '/agnesapi?video_id=' + encodeURIComponent(videoId) + '&model_name=' + encodeURIComponent(model.id);
+  var start = Date.now(), notFound = 0;
   while (true) {
-    await sleep(POLL_MS);
-    if (state.cancel) {
-      falFetch(cancelUrl, { method: 'PUT' }).catch(function () {});
-      throw new Error('Annulé');
+    await sleepCancellable(POLL_MS);
+    if (Date.now() - start > MAX_WAIT_MS) throw new Error('Délai dépassé (30 min). Agnes est probablement surchargé, réessayez plus tard.');
+    var d;
+    try { d = await agnes(pollPath, {}, null, onStatus); }
+    catch (e) {
+      if (e.status === 404 && ++notFound < 5) continue;
+      if (e.fatal || e.message === 'Annulé') throw e;
+      if (e.status === 404) throw new Error('Vidéo introuvable chez Agnes.');
+      continue;
     }
-    if (Date.now() - start > MAX_WAIT_MS) throw new Error('Délai dépassé (25 min). Réessayez plus tard.');
-    var s;
-    try { s = await falFetch(statusUrl); } catch (e) { onStatus && onStatus('Connexion instable, on patiente…'); continue; }
-    if (!s.res.ok && s.res.status !== 202) {
-      if (s.res.status >= 500) continue;
-      throw new Error(explainError(s.res.status, s.body));
-    }
-    var st = (s.body && s.body.status) || '';
+    var st = String(d.status || d.state || '').toLowerCase();
     var elapsed = Math.round((Date.now() - start) / 1000);
-    if (st === 'IN_QUEUE') onStatus && onStatus('En file d\'attente' + (s.body.queue_position != null ? ' (position ' + (s.body.queue_position + 1) + ')' : '') + ' · ' + elapsed + ' s');
-    else if (st === 'IN_PROGRESS') onStatus && onStatus('Création en cours · ' + elapsed + ' s');
-    else if (st === 'COMPLETED') break;
+    if (st === 'completed' || st === 'succeeded' || st === 'success' || st === 'done') {
+      var url = d.url || d.video_url || (d.metadata && d.metadata.url) || (d.output && d.output.url) || (d.result && (d.result.video_url || d.result.url));
+      if (!url) throw new Error('Vidéo terminée mais sans lien de téléchargement.');
+      return url;
+    }
+    if (st === 'failed' || st === 'error' || st === 'cancelled') {
+      var why = typeof d.error === 'string' ? d.error : (d.error && d.error.message) || '';
+      throw new Error('Agnes a échoué' + (why ? ' : ' + why : '') + '. Nouvelle tentative possible.');
+    }
+    var pct = d.progress != null ? ' · ' + Math.round(d.progress) + ' %' : '';
+    onStatus && onStatus((st === 'queued' || st === 'pending' ? 'En file chez Agnes' : 'Animation en cours') + pct + ' · ' + elapsed + ' s');
   }
-  var out = await falFetch(responseUrl);
-  if (!out.res.ok) throw new Error(explainError(out.res.status, out.body));
-  return out.body;
 }
 
 // ══════════════════════════════════════════════════════════════════
-// IMAGES
+// IMAGES LOCALES
 // ══════════════════════════════════════════════════════════════════
 function loadImage(src) {
   return new Promise(function (resolve, reject) {
     var img = new Image();
+    img.crossOrigin = 'anonymous';
     img.onload = function () { resolve(img); };
     img.onerror = function () { reject(new Error('Image illisible')); };
     img.src = src;
@@ -797,7 +1006,6 @@ function fileToDataUrl(file) {
     fr.readAsDataURL(file);
   });
 }
-// Redimensionne en haute qualité (max 2048 px) pour un envoi rapide sans perte visible
 async function prepareImage(file) {
   var raw = await fileToDataUrl(file);
   var img = await loadImage(raw);
@@ -808,12 +1016,12 @@ async function prepareImage(file) {
   var ctx = c.getContext('2d');
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(img, 0, 0, w, h);
-  return { id: uid(), dataUrl: c.toDataURL('image/jpeg', 0.93), w: w, h: h, name: file.name || 'photo' };
+  return { id: uid(), dataUrl: c.toDataURL('image/jpeg', 0.9), w: w, h: h, name: file.name || 'photo' };
 }
-// Recadre en 9:16 avec un fond flouté (utilisé quand la mise en scène IA est désactivée)
+// Recadre en 9:16 avec un fond flouté (quand la mise en scène IA est désactivée)
 async function toVertical(dataUrl) {
   var img = await loadImage(dataUrl);
-  var W = 1080, H = 1920;
+  var W = VIDEO_W, H = VIDEO_H;
   var c = document.createElement('canvas');
   c.width = W; c.height = H;
   var ctx = c.getContext('2d');
@@ -823,9 +1031,9 @@ async function toVertical(dataUrl) {
   ctx.filter = 'none';
   var fit = Math.min(W / img.width, H / img.height);
   ctx.drawImage(img, (W - img.width * fit) / 2, (H - img.height * fit) / 2, img.width * fit, img.height * fit);
-  return c.toDataURL('image/jpeg', 0.93);
+  return c.toDataURL('image/jpeg', 0.9);
 }
-async function addFiles(files) {
+async function addFiles(files, silent) {
   var list = Array.prototype.filter.call(files, function (f) { return /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name); });
   if (!list.length) { toast('Aucune image reconnue', 'warn'); return; }
   var ok = 0;
@@ -834,7 +1042,7 @@ async function addFiles(files) {
     catch (e) { toast('« ' + list[i].name + ' » n\'a pas pu être lue (format non supporté par ce navigateur)', 'error'); }
   }
   renderThumbs();
-  if (ok) toast(ok + ' photo' + (ok > 1 ? 's' : '') + ' ajoutée' + (ok > 1 ? 's' : ''), 'success');
+  if (ok && !silent) toast(ok + ' photo' + (ok > 1 ? 's' : '') + ' ajoutée' + (ok > 1 ? 's' : ''), 'success');
 }
 function renderThumbs() {
   var g = $('thumbs');
@@ -894,6 +1102,20 @@ function renderStyles() {
     box.appendChild(b);
   });
 }
+function syncVideoOptions() {
+  var cast = $('video-cast').value;
+  $('woman-opts').classList.toggle('hidden', cast !== 'woman');
+  $('motion-opts').classList.toggle('hidden', cast !== 'product');
+  // Une présentatrice ou des mains doivent être créées par l'IA : mise en scène obligatoire
+  var forced = cast !== 'product';
+  if (forced) $('video-staging').checked = true;
+  $('video-staging').disabled = forced;
+  $('staging-desc').textContent = forced
+    ? 'Obligatoire ici : l\'IA crée d\'abord une photo 9:16 ultra réaliste de la ' + (cast === 'woman' ? 'présentatrice' : 'main') + ' avec votre vraie lampe, puis l\'anime.'
+    : 'Crée d\'abord une image 9:16 ultra réaliste dans le décor choisi avec votre vraie lampe, puis l\'anime. Sinon, la photo est simplement recadrée.';
+  $('staging-opts').classList.toggle('hidden', !$('video-staging').checked);
+  updateGenerate();
+}
 function setMode(mode) {
   state.mode = mode;
   document.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('active', t.dataset.mode === mode); });
@@ -907,81 +1129,69 @@ function setMode(mode) {
     $('format-label').textContent = mode === 'site' ? 'Emplacement sur le site' : 'Format';
     $('photo-bg').value = info.bg;
     $('photo-light').value = info.light;
-    if (mode === 'site') { $('photo-ext').value = 'webp'; $('photo-res').value = '2K'; }
-    else { $('photo-ext').value = 'png'; }
   }
   renderPresets();
   renderStyles();
   updateGenerate();
 }
-function fmtDuration(sec) {
-  if (sec < 60) return Math.max(10, Math.round(sec / 10) * 10) + ' s';
-  var m = Math.round(sec / 60);
-  return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + String(m % 60).padStart(2, '0');
-}
-function estimateCost() {
+function estimate() {
   var n = state.images.length;
   if (state.mode === 'tiktok') {
-    var m = byId(VIDEO_MODELS, $('video-model').value);
-    var dur = parseInt($('video-duration').value, 10);
-    var staging = $('video-staging').checked;
-    var per = m.perSec * dur + (staging ? STAGING_MODEL.price['2K'] : 0);
-    var secs = m.secs * (dur / 5) + (staging ? STAGING_MODEL.secs : 0);
-    return { count: n * parseInt($('video-count').value, 10), unit: per, secs: secs, word: 'vidéo' };
+    var count = n * parseInt($('video-count').value, 10);
+    var per = byId(VIDEO_MODELS, $('video-model').value).secs * (parseInt($('video-duration').value, 10) / 5);
+    // 1 vidéo / minute au maximum + le temps de rendu de la dernière
+    var total = count ? (count - 1) * VIDEO_GAP_MS / 1000 + per + ($('video-staging').checked ? 30 : 0) : 0;
+    return { count: count, per: per, total: total, word: 'vidéo' };
   }
-  var pm = byId(PHOTO_MODELS, $('photo-model').value);
-  var cnt = parseInt($('photo-count').value, 10);
-  var res = pm.hasRes ? $('photo-res').value : '1K';
-  var s = pm.secs * (res === '4K' ? 1.6 : 1) + (cnt - 1) * 8;
-  // Les variantes d'une même photo partent en une seule requête
-  return { count: n * cnt, jobs: n, unit: pm.price[res], secs: s, word: 'photo' };
+  var res = $('photo-res').value;
+  var c = n * parseInt($('photo-count').value, 10);
+  var perImg = byId(PHOTO_MODELS, $('photo-model').value).secs * (res === '4K' ? 1.6 : 1);
+  var tot = c ? (c - 1) * IMAGE_GAP_MS[res] / 1000 + perImg : 0;
+  return { count: c, per: perImg, total: tot, word: 'photo' };
 }
 function totalCreations() { return parseInt(lsGet(COUNT_STORAGE) || '0', 10) || 0; }
 function updateGenerate() {
-  var btn = $('generate-btn');
   var n = state.images.length;
-  var est = estimateCost();
-  var jobs = est.jobs || est.count;
-  var wall = Math.ceil(jobs / CONCURRENCY) * est.secs;
-  $('generate-label').textContent = MODE_INFO[state.mode].label;
+  var est = estimate();
+  var cont = $('continuous').checked;
+  $('generate-label').textContent = cont ? '♾️ ' + MODE_INFO[state.mode].label + ' en continu' : MODE_INFO[state.mode].label;
   var sub;
-  if (!getKey()) sub = 'Enregistrez d\'abord votre clé API';
+  if (!getKey()) sub = 'Enregistrez d\'abord votre clé Agnes';
   else if (!n) sub = 'Ajoutez au moins une photo';
-  else {
-    var plural = est.count > 1 ? 's' : '';
-    sub = est.count + ' ' + est.word + plural + ' · ' +
-      (CLE_GRATUITE ? 'Gratuit' : '≈ ' + (est.count * est.unit).toFixed(2) + ' $') +
-      ' · ≈ ' + fmtDuration(wall);
-  }
+  else if (cont) sub = 'Gratuit · sans limite de nombre · jusqu\'à ce que vous arrêtiez';
+  else sub = est.count + ' ' + est.word + (est.count > 1 ? 's' : '') + ' · Gratuit · ≈ ' + fmtDuration(est.total);
   $('generate-sub').textContent = state.running ? 'Création en cours…' : sub;
-  btn.disabled = state.running || !n || !getKey();
+  $('generate-btn').disabled = state.running || !n || !getKey();
   var total = totalCreations();
-  $('cost-hint').textContent = CLE_GRATUITE
-    ? 'Génération gratuite avec votre clé · environ ' + fmtDuration(est.secs) + ' par ' + est.word + (total ? ' · ' + total + ' création' + (total > 1 ? 's' : '') + ' réalisée' + (total > 1 ? 's' : '') + ' au total' : '') + '.'
-    : 'Coût indicatif : ≈ ' + est.unit.toFixed(2) + ' $ par ' + est.word + ' (tarifs fal.ai, peuvent évoluer) · environ ' + fmtDuration(est.secs) + ' chacune.';
+  $('cost-hint').textContent = 'Génération gratuite avec votre clé Agnes · environ ' + fmtDuration(est.per) + ' par ' + est.word +
+    (total ? ' · ' + total + ' création' + (total > 1 ? 's' : '') + ' réalisée' + (total > 1 ? 's' : '') + ' au total' : '') + '.';
+  var lim = state.mode === 'tiktok'
+    ? ['🎬 1 nouvelle vidéo par minute (plan gratuit)', '♾️ Nombre illimité', '⏱ Rendu ≈ 2-4 min']
+    : ['📸 ' + { '1K': '20', '2K': '10', '4K': '1' }[$('photo-res').value] + ' photo(s) / minute en ' + $('photo-res').value, '♾️ Nombre illimité'];
+  $('limits').innerHTML = lim.map(function (l) { return '<span>' + esc(l) + '</span>'; }).join('');
 }
 function initUI() {
   fillSelect($('video-model'), VIDEO_MODELS, 'id', 'name', VIDEO_MODELS[0].id);
   fillSelect($('photo-model'), PHOTO_MODELS, 'id', 'name', PHOTO_MODELS[0].id);
+  fillSelect($('video-action'), ACTIONS, 'id', 'name', 'present');
+  document.querySelectorAll('.presenter-select').forEach(function (s) { fillSelect(s, PRESENTERS, 'id', 'name', 'natural'); });
   document.querySelectorAll('.bg-select').forEach(function (s) { fillSelect(s, BACKGROUNDS, 'id', 'name'); });
   document.querySelectorAll('.light-select').forEach(function (s) { fillSelect(s, LIGHTS, 'id', 'name'); });
   $('video-bg').value = MODE_INFO.tiktok.bg;
   $('video-light').value = MODE_INFO.tiktok.light;
-  document.querySelectorAll('.tab').forEach(function (t) { t.onclick = function () { if (!state.running) setMode(t.dataset.mode); else toast('Patientez jusqu\'à la fin de la création en cours', 'warn'); }; });
-  document.querySelectorAll('select').forEach(function (s) { s.addEventListener('change', updateGenerate); });
-  $('video-staging').onchange = function () { $('staging-opts').classList.toggle('hidden', !this.checked); updateGenerate(); };
-  $('photo-model').addEventListener('change', function () {
-    var m = byId(PHOTO_MODELS, this.value);
-    $('photo-res').disabled = !m.hasRes;
-  });
+  document.querySelectorAll('.tab').forEach(function (t) { t.onclick = function () { if (!state.running) setMode(t.dataset.mode); else toast('Patientez jusqu\'à la fin (ou arrêtez) avant de changer de mode', 'warn'); }; });
+  document.querySelectorAll('select, #continuous').forEach(function (s) { s.addEventListener('change', updateGenerate); });
+  $('video-cast').addEventListener('change', syncVideoOptions);
+  $('video-staging').onchange = syncVideoOptions;
+  $('photo-cast').addEventListener('change', function () { $('photo-presenter-wrap').classList.toggle('hidden', !/woman|scene/.test(this.value)); });
   $('generate-btn').onclick = run;
   $('stop-btn').onclick = function () {
     if (!state.stop) { state.stop = true; $('stop-btn').textContent = '⏹ Annuler aussi les créations en cours'; toast('Plus de nouvelle création. Touchez à nouveau pour annuler celles en cours.', 'warn', 4500); }
     else { state.cancel = true; toast('Annulation…', 'warn'); }
   };
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
   $('lb-close').onclick = closeLightbox;
   $('lightbox').onclick = function (e) { if (e.target === this) closeLightbox(); };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
   document.querySelectorAll('#gal-filters .chip').forEach(function (c) {
     c.onclick = function () {
       state.filter = c.dataset.f;
@@ -994,78 +1204,117 @@ function initUI() {
     if (!state.gallery.length || !confirm('Vider la galerie ? (pensez à télécharger vos créations avant)')) return;
     state.gallery = []; saveGallery(); renderGallery();
   };
+  syncVideoOptions();
 }
 
 // ══════════════════════════════════════════════════════════════════
-// CONSTRUCTION DES PROMPTS
+// PROMPTS
 // ══════════════════════════════════════════════════════════════════
 function ambiancePrompt() { return byId(AMBIANCES, state.ambiance[state.mode]).p; }
 function userVision() { return $('main-prompt').value.trim(); }
+function presenterFor(selectId) {
+  var p = byId(PRESENTERS, $(selectId).value);
+  if (!p.p) p = pick(PRESENTERS.filter(function (x) { return x.p; }));
+  return p;
+}
+function withVision(parts) {
+  var amb = ambiancePrompt();
+  if (amb) parts.push('Mood: ' + amb + '.');
+  var v = userVision();
+  if (v) parts.push('Art direction from the client (in French): « ' + v + ' »');
+}
 
-function photoPrompt(format, bgId, lightId, variant) {
-  var bg = byId(BACKGROUNDS, bgId), light = byId(LIGHTS, lightId);
+function photoPrompt(format, variant, presenter) {
+  var bg = byId(BACKGROUNDS, $('photo-bg').value), light = byId(LIGHTS, $('photo-light').value);
+  var cast = $('photo-cast').value;
   var parts = [];
   if (state.mode === 'site') parts.push('Create a premium website image (' + format + ') for an artisan alabaster lamp brand. Elegant composition with generous negative space suitable for overlaid text.');
-  else if (bgId === 'white') parts.push('Create a flawless professional e-commerce product photo of the alabaster lamp.');
-  else parts.push('Create a premium, photorealistic lifestyle product photograph of the alabaster lamp, like a high-end interior design catalogue.');
-  parts.push('Setting: the lamp is placed ' + bg.p + '.');
+  else if (bg.id === 'white' && cast === 'product') parts.push('Create a flawless professional e-commerce product photo of the alabaster lamp from the reference image.');
+  else parts.push('Create a premium, photorealistic lifestyle product photograph featuring the alabaster lamp from the reference image, like a high-end interior design catalogue.');
+  if (cast === 'woman') parts.push('A woman presents the lamp: ' + presenter.p + '. She holds the lamp with both hands and shows it with a warm genuine smile, looking at the camera.');
+  else if (cast === 'scene') parts.push('Lifestyle scene with ' + presenter.p + ', relaxing naturally near the glowing lamp (reading, drinking tea), candid and authentic, the lamp remains the hero of the image.');
+  else if (cast === 'hands') parts.push('Only elegant female hands with a natural nude manicure gently touch the lamp, no face visible.');
+  parts.push('Setting: the lamp is ' + bg.p + '.');
   parts.push('Lighting: ' + light.p + '.');
-  var amb = ambiancePrompt();
-  if (amb) parts.push('Mood: ' + amb + '.');
-  var v = userVision();
-  if (v) parts.push('Art direction from the client (in French): « ' + v + ' »');
-  parts.push('Shot on a full-frame camera with an 85mm lens, natural depth of field, true-to-life colours, ultra sharp details on the stone texture, high dynamic range, magazine quality.');
-  if (variant > 0) parts.push('Variation #' + (variant + 1) + ': choose a slightly different camera angle and composition.');
+  withVision(parts);
+  parts.push('Shot on a full-frame camera with an 85mm lens, natural depth of field, ultra sharp details on the stone texture, high dynamic range, magazine quality.');
+  if (cast !== 'product') parts.push(REALISM);
+  if (variant > 0) parts.push('Variation #' + (variant + 1) + ': choose a different camera angle and composition.');
   parts.push(FIDELITY);
   return parts.join(' ');
 }
 
-function stagingPrompt() {
+function stagingPrompt(job) {
   var bg = byId(BACKGROUNDS, $('video-bg').value), light = byId(LIGHTS, $('video-light').value);
-  var parts = [
-    'Recompose this photo as a vertical 9:16 photorealistic scene for a TikTok video, lamp as the hero subject, well centered with room around it.',
-    'Setting: the lamp is placed ' + bg.p + '.',
-    'Lighting: ' + light.p + '.'
-  ];
-  var amb = ambiancePrompt();
-  if (amb) parts.push('Mood: ' + amb + '.');
-  var v = userVision();
-  if (v) parts.push('Art direction from the client (in French): « ' + v + ' »');
-  parts.push('Cinematic, cosy, premium, true-to-life colours.');
+  var cast = $('video-cast').value;
+  var ugc = $('video-style').value === 'ugc';
+  var parts = ['Vertical 9:16 photorealistic frame for a TikTok video featuring the alabaster lamp from the reference photo.'];
+  if (cast === 'woman') parts.push('A woman, ' + job.presenter.p + ', ' + job.action.img + '. Framed from the waist up, the lamp clearly visible and well lit.');
+  else if (cast === 'hands') parts.push('Only elegant female hands with a natural manicure interact with the lamp, no face visible, the lamp centered.');
+  else parts.push('The lamp is the hero subject, well centered with room around it.');
+  parts.push('Setting: the lamp is ' + bg.p + '.');
+  parts.push('Lighting: ' + light.p + '.');
+  withVision(parts);
+  parts.push(ugc
+    ? 'Authentic UGC look, as if filmed on a recent iPhone in a real home, natural and candid, not staged.'
+    : 'High-end cinematic commercial look, shallow depth of field, premium colour grading.');
+  parts.push(REALISM);
   parts.push(FIDELITY);
   return parts.join(' ');
 }
 
-function videoPrompt(variant) {
-  var motionKey = $('video-motion').value;
-  if (motionKey === 'random' || variant > 0) {
-    var keys = Object.keys(MOTIONS);
-    motionKey = motionKey === 'random' ? pick(keys) : keys[(keys.indexOf(motionKey) + variant) % keys.length];
-  }
+function videoPrompt(job) {
+  var cast = $('video-cast').value;
+  var ugc = $('video-style').value === 'ugc';
   var parts = [];
   var v = userVision();
+  if (cast === 'woman') {
+    parts.push('The woman in the frame ' + job.action.vid.replace(/^she /, '') + '.');
+    parts.push('Natural, realistic human motion, natural blinking and facial expressions, realistic hands.');
+  } else if (cast === 'hands') {
+    parts.push('Elegant female hands slowly and gracefully interact with the lamp, gently touching the glowing alabaster.');
+  } else {
+    var motionKey = $('video-motion').value;
+    var keys = Object.keys(MOTIONS);
+    if (motionKey === 'random') motionKey = pick(keys);
+    else if (job.variant > 0) motionKey = keys[(keys.indexOf(motionKey) + job.variant) % keys.length];
+    parts.push('Camera and motion: ' + MOTIONS[motionKey] + ', ' + INTENSITY[$('video-intensity').value] + '.');
+  }
   if (v) parts.push(v);
-  parts.push('Camera and motion: ' + MOTIONS[motionKey] + ', ' + INTENSITY[$('video-intensity').value] + '.');
   var amb = ambiancePrompt();
   if (amb) parts.push('Mood: ' + amb + '.');
-  parts.push('Photorealistic, cinematic, cosy premium atmosphere, warm light glowing through the translucent alabaster, smooth and stable, high detail, vertical video.');
+  parts.push(ugc ? 'Handheld smartphone footage, authentic TikTok UGC style, natural light.' : 'Cinematic commercial, smooth stabilized camera, premium colour grading.');
+  parts.push('Ultra-realistic, photorealistic, warm light glowing through the translucent alabaster, high detail, vertical 9:16.');
   parts.push('The alabaster lamp keeps exactly the same shape, proportions and stone veining throughout the whole video, no morphing.');
-  return parts.join(' ');
+  return {
+    text: parts.join(' '),
+    negative: 'blurry, low quality, distorted, morphing lamp, deformed product, extra lamps, deformed hands, extra fingers, distorted face, uncanny, flicker, text, subtitles, watermark, logo, cartoon, 3d render'
+  };
 }
-var NEGATIVE = 'blur, distortion, low quality, morphing lamp, deformed shape, changing product, extra lamps, flicker artifacts, text, watermark, logo, cartoon';
 
 // ══════════════════════════════════════════════════════════════════
 // GÉNÉRATION
 // ══════════════════════════════════════════════════════════════════
-function buildJobs() {
+function buildRound(round) {
   var jobs = [];
   var mode = state.mode;
   state.images.forEach(function (im, idx) {
     if (mode === 'tiktok') {
       var c = parseInt($('video-count').value, 10);
-      for (var i = 0; i < c; i++) jobs.push({ kind: 'video', image: im, variant: i, label: 'Vidéo · photo ' + (idx + 1) + (c > 1 ? ' · v' + (i + 1) : '') });
+      for (var i = 0; i < c; i++) {
+        var variant = round * c + i;
+        var action = byId(ACTIONS, $('video-action').value);
+        if (variant > 0) action = ACTIONS[(ACTIONS.indexOf(action) + variant) % ACTIONS.length];
+        jobs.push({ kind: 'video', image: im, variant: variant, presenter: presenterFor('video-presenter'), action: action,
+          label: 'Vidéo · photo ' + (idx + 1) + ' · n°' + (variant + 1) });
+      }
     } else {
-      jobs.push({ kind: 'image', image: im, variant: 0, count: parseInt($('photo-count').value, 10), label: (mode === 'site' ? 'Visuel site' : 'Photo produit') + ' · photo ' + (idx + 1) });
+      var n = parseInt($('photo-count').value, 10);
+      for (var j = 0; j < n; j++) {
+        var v2 = round * n + j;
+        jobs.push({ kind: 'image', image: im, variant: v2, presenter: presenterFor('photo-presenter'),
+          label: (mode === 'site' ? 'Visuel site' : 'Photo produit') + ' · photo ' + (idx + 1) + ' · n°' + (v2 + 1) });
+      }
     }
   });
   return jobs;
@@ -1077,120 +1326,108 @@ function queueRow(job) {
   d.innerHTML = '<img alt=""><div class="q-main"><div class="q-name"></div><div class="q-status">En attente</div></div><span class="q-ico">·</span>';
   d.querySelector('img').src = job.image.dataUrl;
   d.querySelector('.q-name').textContent = job.label;
-  $('queue').appendChild(d);
-  job.el = d;
+  var q = $('queue');
+  q.insertBefore(d, q.firstChild);
+  // Garde la liste lisible en mode continu
+  var rows = q.querySelectorAll('.q-item');
+  for (var i = MAX_QUEUE_ROWS; i < rows.length; i++) if (/done|fail/.test(rows[i].className) || rows[i].dataset.cancelled) rows[i].remove();
   job.set = function (cls, text, icon) {
     d.className = 'q-item ' + (cls || '');
     d.querySelector('.q-status').textContent = text;
     var ico = d.querySelector('.q-ico');
     if (cls === 'run') { ico.className = 'spin q-ico'; ico.textContent = ''; }
     else { ico.className = 'q-ico'; ico.textContent = icon || '·'; }
+    if (text === 'Annulé') d.dataset.cancelled = '1';
   };
 }
 
 async function runImageJob(job) {
   var model = byId(PHOTO_MODELS, $('photo-model').value);
   var format = $('photo-format').value;
-  var input = {
-    prompt: photoPrompt(format, $('photo-bg').value, $('photo-light').value, job.variant),
-    image_urls: [job.image.dataUrl],
-    num_images: job.count,
-    aspect_ratio: format,
-    output_format: $('photo-ext').value
-  };
-  if (model.hasRes) input.resolution = $('photo-res').value;
-  var result = await falRun(model.id, input, function (s) { job.set('run', s); });
-  var imgs = (result && result.images) || [];
-  if (!imgs.length) throw new Error('Aucune image renvoyée (contenu refusé par le filtre ?). Essayez un autre prompt.');
-  imgs.forEach(function (im) {
-    addToGallery({ type: 'image', url: im.url, ratio: format === 'auto' ? '' : format, mode: state.mode, ext: $('photo-ext').value, res: model.hasRes ? $('photo-res').value : '' });
-  });
-  return imgs.length + ' image' + (imgs.length > 1 ? 's' : '');
+  var res = $('photo-res').value;
+  var size = sizeFor(format, res, job.image.w, job.image.h);
+  var out = await agnesImage(model.id, photoPrompt(format, job.variant, job.presenter), job.image.dataUrl, size, res, function (s) { job.set('run', s); });
+  addToGallery({ type: 'image', url: out.url, persist: out.persist, ratio: format === 'auto' ? '' : format, mode: state.mode, res: res });
+  return 'Photo prête · ' + size.replace('x', '×');
 }
 
 async function runVideoJob(job) {
   var model = byId(VIDEO_MODELS, $('video-model').value);
   var startImage;
   if ($('video-staging').checked) {
-    job.set('run', 'Mise en scène 9:16…');
-    var staged = await falRun(STAGING_MODEL.id, {
-      prompt: stagingPrompt(),
-      image_urls: [job.image.dataUrl],
-      num_images: 1,
-      aspect_ratio: '9:16',
-      resolution: '2K',
-      output_format: 'jpeg'
-    }, function (s) { job.set('run', 'Mise en scène · ' + s); });
-    var si = staged && staged.images && staged.images[0];
-    if (!si) throw new Error('La mise en scène n\'a rien renvoyé. Essayez sans la mise en scène IA.');
-    startImage = si.url;
-    addToGallery({ type: 'image', url: si.url, ratio: '9:16', mode: 'tiktok', ext: 'jpeg', note: 'Scène' });
+    var staged = await agnesImage(STAGING_MODEL.id, stagingPrompt(job), job.image.dataUrl, VIDEO_W + 'x' + VIDEO_H, '1K',
+      function (s) { job.set('run', 'Mise en scène · ' + s); });
+    startImage = staged.url;
+    addToGallery({ type: 'image', url: staged.url, persist: staged.persist, ratio: '9:16', mode: 'tiktok', note: 'Scène' });
   } else {
     startImage = await toVertical(job.image.dataUrl);
   }
-  job.set('run', 'Animation…');
-  var input = {
-    prompt: videoPrompt(job.variant),
-    duration: $('video-duration').value,
-    negative_prompt: NEGATIVE,
-    cfg_scale: 0.5
-  };
-  input[model.imageField] = startImage;
-  if (model.noAudio) input.generate_audio = false;
-  var result = await falRun(model.id, input, function (s) { job.set('run', 'Animation · ' + s); });
-  var url = result && result.video && result.video.url;
-  if (!url) throw new Error('Aucune vidéo renvoyée. Réessayez.');
-  addToGallery({ type: 'video', url: url, ratio: '9:16', mode: 'tiktok', ext: 'mp4' });
+  var url = await agnesVideo(model, videoPrompt(job), startImage, parseInt($('video-duration').value, 10), function (s) { job.set('run', 'Vidéo · ' + s); });
+  addToGallery({ type: 'video', url: url, persist: true, ratio: '9:16', mode: 'tiktok' });
   return 'Vidéo prête';
 }
 
 async function run() {
   if (state.running) return;
-  if (!getKey()) { toast('Enregistrez votre clé API fal.ai', 'error'); $('api-body').classList.remove('hidden'); return; }
+  if (!getKey()) { toast('Enregistrez votre clé Agnes', 'error'); $('api-body').classList.remove('hidden'); return; }
   if (!state.images.length) { toast('Ajoutez au moins une photo', 'warn'); return; }
-  var jobs = buildJobs();
   state.running = true; state.stop = false; state.cancel = false;
+  var continuous = $('continuous').checked;
   $('stop-btn').textContent = '⏹ Arrêter la génération';
   $('queue').innerHTML = '';
   $('queue-card').classList.remove('hidden');
   $('stop-btn').classList.remove('hidden');
-  jobs.forEach(queueRow);
   updateGenerate();
   keepAwake(true);
-  var done = 0, failed = 0, fatal = false;
-  // Les photos partent 2 par 2, les vidéos 2 par 2 aussi (fal gère la file côté serveur)
-  var concurrency = CONCURRENCY, next = 0;
-  function summary() { $('queue-summary').textContent = (done + failed) + ' / ' + jobs.length + (failed ? ' · ' + failed + ' échec' + (failed > 1 ? 's' : '') : ''); }
-  summary();
+
+  var round = 0, pending = [], done = 0, failed = 0, fatal = false, total = 0, streak = 0;
+  function refill() {
+    if (pending.length || state.stop || fatal) return;
+    if (round > 0 && !continuous) return;
+    var jobs = buildRound(round++);
+    jobs.forEach(queueRow);
+    total += jobs.length;
+    pending = pending.concat(jobs);
+  }
+  function summary() {
+    $('queue-summary').textContent = done + ' réussie' + (done > 1 ? 's' : '') +
+      (failed ? ' · ' + failed + ' échec' + (failed > 1 ? 's' : '') : '') +
+      (continuous ? ' · tour ' + round : ' / ' + total);
+  }
+  // Les vidéos : plusieurs rendus en parallèle, mais 1 envoi / minute (géré par le Pacer)
+  var workers = state.mode === 'tiktok' ? 4 : 3;
+  refill(); summary();
   async function worker() {
-    while (next < jobs.length && !state.stop && !fatal) {
-      var job = jobs[next++];
-      job.set('run', 'Envoi…');
+    while (!state.stop && !fatal) {
+      refill();
+      var job = pending.shift();
+      if (!job) return;
+      job.set('run', 'Préparation…');
       try {
         var msg;
         try { msg = job.kind === 'video' ? await runVideoJob(job) : await runImageJob(job); }
         catch (first) {
-          // Une seule nouvelle tentative pour les erreurs passagères (réseau, serveur)
-          if (state.cancel || /Annulé|Clé API|Crédits|refusée|Requête refusée/.test(first.message)) throw first;
+          if (state.cancel || first.fatal || first.message === 'Annulé' || first.status === 400 || first.status === 422) throw first;
           job.set('run', 'Nouvelle tentative…');
-          await sleep(3000);
+          await sleepCancellable(5000);
           msg = job.kind === 'video' ? await runVideoJob(job) : await runImageJob(job);
         }
         job.set('done', msg, '✓');
-        done++;
+        done++; streak = 0;
       } catch (e) {
         if (e.message === 'Annulé') { job.set('', 'Annulé', '–'); summary(); continue; }
         failed++;
         job.set('fail', e.message || String(e), '✕');
-        if (/Clé API refusée|Crédits fal\.ai épuisés/.test(e.message)) { fatal = true; toast(e.message, 'error', 6000); }
+        if (e.fatal) { fatal = true; toast(e.message, 'error', 7000); }
+        else if (++streak >= 6) { fatal = true; toast('6 échecs d\'affilée : arrêt automatique. Dernière erreur : ' + e.message, 'error', 8000); }
       }
       summary();
     }
   }
-  var workers = [];
-  for (var w = 0; w < concurrency; w++) workers.push(worker());
-  await Promise.all(workers);
-  jobs.slice(next).forEach(function (j) { j.set('', 'Annulé', '–'); });
+  var ws = [];
+  for (var w = 0; w < workers; w++) ws.push(worker());
+  await Promise.all(ws);
+  pending.forEach(function (j) { j.set('', 'Annulé', '–'); });
   state.running = false;
   $('stop-btn').classList.add('hidden');
   keepAwake(false);
@@ -1198,7 +1435,6 @@ async function run() {
   if (!fatal) toast(done ? '✨ ' + done + ' création' + (done > 1 ? 's' : '') + ' terminée' + (done > 1 ? 's' : '') : 'Aucune création réussie', done ? 'success' : 'error', 4000);
 }
 
-// Garde l'écran allumé pendant la génération (API Wake Lock)
 async function keepAwake(on) {
   try {
     if (on && 'wakeLock' in navigator) state.wakeLock = await navigator.wakeLock.request('screen');
@@ -1213,7 +1449,10 @@ window.addEventListener('beforeunload', function (e) { if (state.running) { e.pr
 // ══════════════════════════════════════════════════════════════════
 // GALERIE
 // ══════════════════════════════════════════════════════════════════
-function saveGallery() { lsSet(GALLERY_STORAGE, JSON.stringify(state.gallery.slice(0, 150))); }
+function saveGallery() {
+  var keep = state.gallery.filter(function (i) { return i.persist !== false; }).slice(0, 200);
+  lsSet(GALLERY_STORAGE, JSON.stringify(keep));
+}
 function loadGallery() {
   try { state.gallery = JSON.parse(lsGet(GALLERY_STORAGE) || '[]') || []; } catch (e) { state.gallery = []; }
 }
@@ -1225,11 +1464,11 @@ function addToGallery(item) {
   saveGallery();
   renderGallery();
 }
-function fileName(item) {
+function fileName(item, blobType) {
   var d = new Date(item.date);
   var stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '-' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0') + String(d.getSeconds()).padStart(2, '0');
-  var kind = item.type === 'video' ? 'tiktok' : (item.mode === 'site' ? 'site' : 'produit');
-  var ext = item.ext === 'jpeg' ? 'jpg' : (item.ext || (item.type === 'video' ? 'mp4' : 'png'));
+  var kind = item.type === 'video' ? 'tiktok' : (item.mode === 'site' ? 'site' : (item.note ? 'scene' : 'produit'));
+  var ext = item.type === 'video' ? 'mp4' : ({ 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png' }[blobType] || 'png');
   return 'albea-' + kind + '-' + stamp + '.' + ext;
 }
 async function download(item, btn) {
@@ -1239,8 +1478,7 @@ async function download(item, btn) {
     var r = await fetch(item.url);
     if (!r.ok) throw new Error();
     var blob = await r.blob();
-    var name = fileName(item);
-    // Sur mobile : partage natif (enregistrer dans Photos, envoyer vers TikTok…)
+    var name = fileName(item, blob.type);
     var file = null;
     try { file = new File([blob], name, { type: blob.type }); } catch (e) {}
     if (file && navigator.canShare && navigator.canShare({ files: [file] }) && /iPhone|iPad|Android/i.test(navigator.userAgent)) {
@@ -1259,20 +1497,20 @@ async function download(item, btn) {
   btn.textContent = old;
 }
 async function animatePhoto(item) {
-  if (state.running) { toast('Patientez jusqu\'à la fin de la création en cours', 'warn'); return; }
+  if (state.running) { toast('Patientez jusqu\'à la fin (ou arrêtez) la création en cours', 'warn'); return; }
   try {
     var r = await fetch(item.url);
     var blob = await r.blob();
-    var f = new File([blob], 'scene.' + (item.ext || 'png'), { type: blob.type || 'image/png' });
+    var f = new File([blob], 'scene.png', { type: blob.type || 'image/png' });
     state.images = [];
-    await addFiles([f]);
+    await addFiles([f], true);
     setMode('tiktok');
+    $('video-cast').value = 'product';
     $('video-staging').checked = false;
-    $('staging-opts').classList.add('hidden');
-    updateGenerate();
+    syncVideoOptions();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     toast('Photo prête à être animée : vérifiez les réglages puis « Créer les vidéos »', 'success', 5000);
-  } catch (e) { toast('Impossible de récupérer cette image', 'error'); }
+  } catch (e) { toast('Impossible de récupérer cette image (téléchargez-la puis ajoutez-la à la main)', 'error', 5000); }
 }
 function openLightbox(item) {
   var c = $('lb-content');
